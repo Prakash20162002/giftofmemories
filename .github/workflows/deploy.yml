@@ -1,0 +1,51 @@
+name: Deploy Gift of Memories
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Hostinger VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+
+            PROJECT_DIR="/var/www/giftofmemories"
+            BACKEND_DIR="$PROJECT_DIR/server"
+            FRONTEND_DIR="$PROJECT_DIR/client"
+            APP_NAME="giftofmemories"
+
+            cd $PROJECT_DIR
+            git fetch origin
+            git reset --hard origin/main
+
+            cd $BACKEND_DIR
+            npm install
+
+            pm2 describe $APP_NAME > /dev/null 2>&1 \
+              && pm2 restart $APP_NAME \
+              || pm2 start server.js --name $APP_NAME --cwd $BACKEND_DIR
+
+            pm2 save
+
+            cd $FRONTEND_DIR
+            npm install
+            rm -rf dist
+            npm run build
+
+            sudo nginx -t
+            sudo systemctl restart nginx

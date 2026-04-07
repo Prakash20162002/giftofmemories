@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemaps help search engines find your content faster
+Sitemap: https://giftofmemories.in/sitemap.xml
