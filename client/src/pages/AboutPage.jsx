@@ -4,6 +4,7 @@ import { Heart, Camera, Award, Users, ArrowRight } from "lucide-react";
 import axios from "axios";
 import Loader from "../components/Loader";
 import RevealOnScroll from "../components/RevealOnScroll";
+import ReactMarkdown from 'react-markdown';
 
 const AboutPage = () => {
   const [aboutData, setAboutData] = useState(null);
@@ -17,7 +18,6 @@ const AboutPage = () => {
   useEffect(() => {
     const fetchAbout = async () => {
       try {
-        // FIX: Added backticks around the URL string
         const res = await axios.get(`${import.meta.env.VITE_NODE_URL}/api/about/get-about`);
         if (res.data) setAboutData(res.data);
       } catch (e) { 
@@ -41,23 +41,27 @@ const AboutPage = () => {
   return (
     <main className="bg-[#FAF9F6] min-h-screen overflow-x-hidden selection:bg-gold-accent selection:text-white">
       
-      {/* --- CINEMATIC HERO --- */}
-      <section className="relative h-[55vh] md:h-[70vh] w-full bg-charcoal-black flex items-center justify-center overflow-hidden">
+      {/* --- CINEMATIC HERO (FIXED HEIGHT & REMOVED FOG) --- */}
+      <section className="relative h-[40vh] min-h-[300px] md:h-[50vh] md:min-h-[400px] w-full bg-charcoal-black flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <motion.img 
             initial={{ scale: 1.1, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.5 }}
+            animate={{ scale: 1, opacity: 0.6 }}
             transition={{ duration: 1.5 }}
             src="/about-hero.jpg" 
             className="w-full h-full object-cover"
             alt="Gift of Memories Studio"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/80 via-transparent to-[#FAF9F6]" />
+          <div className="absolute inset-0 bg-charcoal-black/50" />
         </div>
 
-        <div className="relative z-10 text-center px-6">
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gold-accent font-inter text-[10px] uppercase tracking-[0.5em] font-black mb-4 block">Since 2018</motion.span>
-          <h1 className="font-playfair text-4xl md:text-8xl text-warm-ivory font-bold tracking-tighter mb-6">The Art of <span className="italic text-gold-accent">Legacy</span></h1>
+        <div className="relative z-10 text-center px-6 mt-8 md:mt-12">
+          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gold-accent font-inter text-[10px] md:text-xs uppercase tracking-[0.4em] md:tracking-[0.5em] font-black mb-3 md:mb-4 block">
+            Since 2018
+          </motion.span>
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-warm-ivory font-bold tracking-tighter mb-4 md:mb-6 drop-shadow-lg">
+            The Art of <span className="italic text-gold-accent">Legacy</span>
+          </h1>
           <div className="h-px w-12 md:w-20 bg-gold-accent mx-auto" />
         </div>
       </section>
@@ -74,9 +78,15 @@ const AboutPage = () => {
             <div className="w-full md:w-1/2">
               <span className="text-gold-accent font-inter text-[10px] uppercase tracking-[0.4em] font-black mb-6 block">Our Philosophy</span>
               <h2 className="font-playfair text-3xl md:text-6xl text-charcoal-black font-bold mb-6 leading-tight">Gift of Memories is more than a <span className="italic">studio</span>.</h2>
-              <p className="text-slate-gray font-inter text-base md:text-lg leading-relaxed font-light mb-8">
-                {aboutData?.storyContent || "A curated collection of handcrafted Samogri and cinematic stories designed for every Bengali wedding ritual. We began with a simple belief: that every wedding is a historical event."}
-              </p>
+              
+              {/* FIX: Replaced the standard <p> tag with a div wrapping ReactMarkdown */}
+              {/* Added space-y-4 so multiple paragraphs are perfectly spaced out */}
+              <div className="text-slate-gray font-inter text-base md:text-lg leading-relaxed font-light mb-8 space-y-4">
+                <ReactMarkdown>
+                  {aboutData?.storyContent || "A curated collection of handcrafted Samogri and cinematic stories designed for every Bengali wedding ritual. We began with a simple belief: that every wedding is a historical event."}
+                </ReactMarkdown>
+              </div>
+
               <div className="grid grid-cols-2 gap-8 border-t border-charcoal-black/5 pt-8">
                 <div><h4 className="font-playfair text-2xl md:text-3xl text-gold-accent font-bold">500+</h4><p className="text-[9px] uppercase font-black tracking-widest text-charcoal-black">Stories Told</p></div>
                 <div><h4 className="font-playfair text-2xl md:text-3xl text-gold-accent font-bold">12+</h4><p className="text-[9px] uppercase font-black tracking-widest text-charcoal-black">Awards Won</p></div>
@@ -86,7 +96,7 @@ const AboutPage = () => {
         </RevealOnScroll>
       </section>
 
-      {/* --- OUR FOUNDATION (FIXED 1-ROW GRID, NO SCROLL) --- */}
+      {/* --- OUR FOUNDATION --- */}
       <section className="bg-charcoal-black py-16 md:py-32 relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-10 md:mb-20">
@@ -94,7 +104,6 @@ const AboutPage = () => {
             <div className="h-px w-10 bg-gold-accent/30 mx-auto" />
           </div>
 
-          {/* STRICT 4 COLUMN GRID: NO OVERFLOW */}
           <div className="grid grid-cols-4 gap-1 md:gap-12 items-start max-w-5xl mx-auto">
             {foundationItems.map((value, i) => (
               <div key={i} className="text-center group px-1">
@@ -140,7 +149,7 @@ const AboutPage = () => {
         </div>
       </section>
 
-      {/* --- FINAL CTA (FIXED: SMALL MOBILE BUTTON) --- */}
+      {/* --- FINAL CTA --- */}
       <section className="py-16 bg-charcoal-black border-t border-white/5">
         <div className="container mx-auto px-6 text-center">
           <h2 className="font-playfair text-2xl md:text-5xl text-warm-ivory mb-8 leading-tight">
