@@ -125,7 +125,7 @@ const ProductCard = ({ product, index }) => {
 
         <div className="flex items-end justify-between mt-auto">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-widest text-slate-gray/60 font-bold mb-1">Your message</span>
+            <span className="text-[10px] uppercase tracking-widest text-slate-gray/60 font-bold mb-1">Price</span>
             <span className="font-inter text-lg md:text-xl font-light text-charcoal-black">
               ₹{Number(product.price).toLocaleString("en-IN")}
             </span>
