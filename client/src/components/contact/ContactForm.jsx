@@ -230,7 +230,7 @@ const ContactForm = () => {
           {/* Message Area */}
           <div className="space-y-1.5 md:space-y-2">
             <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
-              Your Vision
+              Enquiry
             </label>
             <textarea
               rows="3"
