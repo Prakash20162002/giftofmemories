@@ -20,7 +20,7 @@ const Navbar = () => {
   // Close menu on route change
   useEffect(() => setIsMenuOpen(false), [location.pathname]);
 
-  // ADDED: Smooth scroll to top function for the logo
+  // Smooth scroll to top function for the logo
   const handleLogoClick = () => {
     window.scrollTo({
       top: 0,
@@ -43,7 +43,6 @@ const Navbar = () => {
     }`}>
       <div className="container mx-auto px-4 md:px-6 xl:px-12 flex items-center justify-between">
         
-        {/* ADDED: onClick={handleLogoClick} to the logo link */}
         <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 z-50 shrink-0 cursor-pointer">
           <img src={logo} alt="Gift of Memories" className="h-10 md:h-12 w-auto" />
           <span className="font-playfair text-xl font-bold text-warm-ivory hidden xl:inline">
@@ -70,9 +69,22 @@ const Navbar = () => {
           </Link>
         </div>
 
-        {/* Hamburger Button */}
-        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="lg:hidden text-warm-ivory z-50 p-2 shrink-0 cursor-pointer">
-          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+        {/* FIX: Mobile Hamburger Button - Now includes text labels underneath the icons */}
+        <button 
+          onClick={() => setIsMenuOpen(!isMenuOpen)} 
+          className="lg:hidden text-warm-ivory z-50 p-1 shrink-0 cursor-pointer flex flex-col items-center justify-center gap-0.5"
+        >
+          {isMenuOpen ? (
+            <>
+              <X size={26} strokeWidth={1.5} />
+              <span className="text-[8px] font-inter uppercase tracking-[0.2em] font-bold text-gold-accent">Close</span>
+            </>
+          ) : (
+            <>
+              <Menu size={26} strokeWidth={1.5} />
+              <span className="text-[8px] font-inter uppercase tracking-[0.2em] font-bold text-gold-accent">Menu</span>
+            </>
+          )}
         </button>
       </div>
 
@@ -85,13 +97,20 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="absolute top-0 left-0 w-full bg-charcoal-black z-40 flex flex-col justify-center items-center overflow-hidden"
           >
-            <div className="flex flex-col gap-8 text-center">
+            <div className="flex flex-col gap-8 text-center mt-10">
               {navLinks.map((link) => (
-                <Link key={link.name} to={link.path} className="text-2xl font-playfair font-bold text-warm-ivory hover:text-gold-accent">
+                <Link key={link.name} to={link.path} className="text-3xl font-playfair font-bold text-warm-ivory hover:text-gold-accent transition-colors">
                   {link.name}
                 </Link>
               ))}
-              <Link to="/contact" className="mt-4 px-10 py-4 bg-gold-accent text-charcoal-black font-bold uppercase tracking-widest rounded-full">
+              
+              {isClientLoggedIn ? (
+                <button onClick={logout} className="text-xl font-playfair font-bold text-warm-ivory/50 hover:text-red-400 mt-4 transition-colors">Logout</button>
+              ) : (
+                <Link to="/login" className="text-xl font-playfair font-bold text-warm-ivory/50 hover:text-warm-ivory mt-4 transition-colors">Client Login</Link>
+              )}
+
+              <Link to="/contact" className="mt-6 px-10 py-4 bg-gold-accent text-charcoal-black font-inter text-xs font-black uppercase tracking-[0.2em] rounded-full shadow-xl">
                 Book a Session
               </Link>
             </div>

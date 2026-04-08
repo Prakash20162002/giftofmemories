@@ -95,9 +95,10 @@ const HomePage = () => {
             
             <ProductCategoryGrid />
 
-            <div className="mt-12 flex justify-center">
-              <a href="/shop" className="w-full sm:w-auto px-10 py-5 bg-gold-accent text-white font-inter text-xs font-black uppercase tracking-widest rounded-sm shadow-2xl hover:bg-charcoal-black transition-all flex items-center justify-center gap-2">
-                Explore Samogri Shop <ArrowRight size={16} />
+            <div className="mt-8 md:mt-12 flex justify-center">
+              {/* FIX: Removed w-full. Reduced mobile padding (px-6 py-3.5). Reduced mobile text (text-[10px]). */}
+              <a href="/shop" className="w-max inline-flex px-6 py-3.5 md:px-10 md:py-5 bg-gold-accent text-white font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm shadow-2xl hover:bg-charcoal-black transition-all items-center justify-center gap-2">
+                Explore Samogri Shop <ArrowRight size={14} className="md:w-4 md:h-4" />
               </a>
             </div>
           </div>
@@ -117,9 +118,10 @@ const HomePage = () => {
             
             <ServiceCategoryGrid packages={packages} isLoading={isLoadingServices} />
 
-            <div className="mt-12 flex justify-center">
-              <a href="/services" className="w-full sm:w-auto px-10 py-5 border-2 border-gold-accent text-charcoal-black font-inter text-xs font-black uppercase tracking-widest rounded-sm hover:bg-gold-accent hover:text-white transition-all flex items-center justify-center gap-2">
-                {settings.servicesBtn} <ArrowRight size={16} />
+            <div className="mt-8 md:mt-12 flex justify-center">
+              {/* FIX: Removed w-full. Scaled down mobile padding (px-6 py-3.5) and text (text-[10px]). */}
+              <a href="/services" className="w-max inline-flex px-6 py-3.5 md:px-10 md:py-5 border-2 border-gold-accent text-charcoal-black font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm hover:bg-gold-accent hover:text-white transition-all items-center justify-center gap-2">
+                {settings.servicesBtn} <ArrowRight size={14} className="md:w-4 md:h-4" />
               </a>
             </div>
           </div>
