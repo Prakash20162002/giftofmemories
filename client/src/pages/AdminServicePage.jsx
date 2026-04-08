@@ -339,7 +339,7 @@ const AdminServicePage = () => {
                   onClick={openAddPackageModal}
                   className="flex-1 lg:flex-none px-6 py-3.5 bg-charcoal-black text-gold-accent rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-gold-accent hover:text-charcoal-black transition-all shadow-lg flex items-center justify-center gap-2"
                 >
-                  <Plus size={16} /> New Package
+                  <Plus size={16} /> New Service
                 </button>
               </div>
             </div>

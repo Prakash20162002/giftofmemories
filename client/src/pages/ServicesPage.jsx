@@ -6,7 +6,7 @@ import ServiceFilter from "../components/services/ServiceFilter";
 import ServiceCategoryGrid from "../components/services/ServiceCategoryGrid";
 import CustomPackageCTA from "../components/services/CustomPackageCTA";
 import ServiceTrustStrip from "../components/services/ServiceTrustStrip";
-import MostBookedPackages from "../components/services/MostBookedPackages";
+// FIX 1: Removed the MostBookedPackages import
 import PageVideoSection from "../components/PageVideoSection";
 
 const ServicesPage = () => {
@@ -84,10 +84,7 @@ const ServicesPage = () => {
       {/* Hero Section */}
       <ServiceHero />
 
-      {/* Highlights Section */}
-      <section aria-label="Most Booked Packages" className="relative z-10 bg-white">
-        <MostBookedPackages />
-      </section>
+      {/* FIX 2: Completely removed the "Most Booked Packages" section so it doesn't interrupt the page flow */}
 
       {/* Cinematic Video Section */}
       <section aria-label="The Cinematic Experience" className="bg-charcoal-black border-y border-charcoal-black/5">
@@ -99,9 +96,10 @@ const ServicesPage = () => {
       </section>
 
       {/* Main Services Filter & Grid */}
+      {/* FIX 3: Adjusted padding to connect smoothly to the video section above it */}
       <section 
         aria-label="Explore Our Services" 
-        className="py-20 md:py-32 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
+        className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
       >
         <div className="text-center mb-12 md:mb-16">
             <span className="text-gold-accent font-inter text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-4 block">
@@ -121,6 +119,7 @@ const ServicesPage = () => {
           packages={packages}
         />
         
+        {/* All packages now render exclusively here in the beautiful grid we built! */}
         <div className="mt-12 md:mt-16">
           <ServiceCategoryGrid
             packages={filteredPackages}
