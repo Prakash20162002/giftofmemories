@@ -39,7 +39,7 @@ const Hero = () => {
 
   if (!serverHero) {
     return (
-      <section className="relative min-h-[100dvh] w-full z-30 bg-charcoal-black flex items-center justify-center">
+      <section className="relative min-h-[65vh] md:min-h-[100dvh] w-full z-30 bg-charcoal-black flex items-center justify-center">
         <Loader color="#F5F3EF" />
       </section>
     );
@@ -52,8 +52,8 @@ const Hero = () => {
   };
 
   return (
-    /* FIXED: Changed from strict h-[100dvh] to min-h-[100dvh] with vertical padding (py-24) to prevent squishing on short laptops */
-    <section className="relative min-h-[100dvh] w-full z-30 bg-charcoal-black flex items-center justify-center py-24 md:py-32">
+    /* FIX 1: Reduced mobile height to 65vh, kept desktop at 100dvh */
+    <section className="relative min-h-[65vh] md:min-h-[100dvh] w-full z-30 bg-charcoal-black flex items-center justify-center py-24 md:py-32">
       
       {/* Background Image Slider Wrapper */}
       <div className="absolute inset-0 w-full h-full overflow-hidden">
@@ -67,14 +67,15 @@ const Hero = () => {
             animate="center"
             exit="exit"
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="absolute inset-0 w-full h-full object-cover"
+            /* FIX 2: Added object-top md:object-center to prioritize top of images on mobile */
+            className="absolute inset-0 w-full h-full object-cover object-top md:object-center"
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/70 via-charcoal-black/30 to-charcoal-black/90 pointer-events-none" />
       </div>
 
       {/* Main Content Area */}
-      <div className="relative z-40 w-full flex flex-col items-center justify-center text-center px-5 sm:px-10">
+      <div className="relative z-40 w-full flex flex-col items-center justify-center text-center px-5 sm:px-10 mt-6 md:mt-0">
         <div className="max-w-5xl w-full flex flex-col items-center">
           
           <motion.span 
@@ -86,17 +87,15 @@ const Hero = () => {
             Candid and cinematic wedding stories by Gift of Memories
           </motion.span>
 
-          {/* FIXED: Smoother typography scaling (md:text-6xl lg:text-7xl xl:text-8xl) so it doesn't break on 13-inch screens */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-warm-ivory font-bold mb-4 md:mb-6 leading-[1.1] drop-shadow-2xl"
+            className="font-playfair text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl text-warm-ivory font-bold mb-3 md:mb-6 leading-[1.1] drop-shadow-2xl"
           >
             {serverHero.title || "Preserving Your Legacy"}
           </motion.h1>
           
-          {/* FIXED: Responsive bottom margin (mb-6 to mb-10) */}
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -106,12 +105,12 @@ const Hero = () => {
             Capturing weddings, celebrations, and unforgettable moments across Kolkata and beyond.
           </motion.p>
           
-          {/* SEARCH WRAPPER: Responsive margin */}
+          {/* SEARCH WRAPPER */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.8 }}
-            className="relative w-full max-w-3xl mb-8 md:mb-12 z-50"
+            className="relative w-full max-w-3xl mb-6 md:mb-12 z-50"
           >
             <MegaSearch />
           </motion.div>
@@ -120,17 +119,17 @@ const Hero = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="flex flex-row items-center justify-center gap-3 sm:gap-4 w-full"
+            className="flex flex-row items-center justify-center gap-2 sm:gap-4 w-full"
           >
             <Link 
               to="/gallery" 
-              className="w-1/2 sm:w-auto px-2 sm:px-10 py-3.5 sm:py-4 text-center bg-gold-accent text-charcoal-black font-inter font-black text-[10px] md:text-xs uppercase tracking-widest rounded-full hover:bg-white hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20"
+              className="w-1/2 sm:w-auto px-2 sm:px-10 py-3.5 sm:py-4 text-center bg-gold-accent text-charcoal-black font-inter font-black text-[9px] md:text-xs uppercase tracking-widest rounded-full hover:bg-white hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20"
             >
               View Portfolio
             </Link>
             <Link 
               to="/services" 
-              className="w-1/2 sm:w-auto px-2 sm:px-10 py-3.5 sm:py-4 text-center border-2 border-white/30 text-white font-inter font-black text-[10px] md:text-xs uppercase tracking-widest rounded-full hover:bg-white hover:text-charcoal-black hover:scale-105 transition-all duration-300 backdrop-blur-sm"
+              className="w-1/2 sm:w-auto px-2 sm:px-10 py-3.5 sm:py-4 text-center border-2 border-white/30 text-white font-inter font-black text-[9px] md:text-xs uppercase tracking-widest rounded-full hover:bg-white hover:text-charcoal-black hover:scale-105 transition-all duration-300 backdrop-blur-sm"
             >
               Explore Services
             </Link>
@@ -146,7 +145,7 @@ const Hero = () => {
               onClick={() => setCurrentSlide(index)}
               className={`h-1.5 transition-all duration-500 rounded-full shadow-lg ${
                 index === currentSlide
-                  ? "bg-gold-accent w-8 md:w-10"
+                  ? "bg-gold-accent w-6 md:w-10"
                   : "bg-white/30 hover:bg-white/60 w-2 md:w-3"
               }`}
               aria-label={`View slide ${index + 1}`}
