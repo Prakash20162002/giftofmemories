@@ -178,6 +178,10 @@ const BlogPostPage = () => {
         @media (max-width: 768px) {
           .drop-cap p:first-of-type::first-letter {
             font-size: 3.5rem;
+            .prose iframe {
+              width: 100%;
+              aspect-ratio: 16 / 9;
+              border-radius: 1.5rem;
           }
         }
       `}</style>

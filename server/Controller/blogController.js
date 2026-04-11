@@ -28,14 +28,8 @@ export const getBlogById = async (req, res) => {
 // Create blog
 export const createBlog = async (req, res) => {
   try {
-    const {
-      title,
-      excerpt,
-      content,
-      category,
-      date,
-      image: manualImage,
-    } = req.body;
+    const { title, excerpt, content, category, date, image: manualImage } = req.body;
+    
     let imageUrl = manualImage || "https://via.placeholder.com/800x400"; 
 
     if (req.file) {
@@ -53,16 +47,18 @@ export const createBlog = async (req, res) => {
       imageUrl = result.secure_url;
     }
 
-    // Auto-generate slug
+    // SLUG GENERATION: Optimized for SEO
     const slug = title
       .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
+      .trim()
+      .replace(/[^\w\s-]/g, '') // Remove special chars
+      .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+      .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
 
     const newBlog = new Blog({
       title,
       excerpt,
-      content,
+      content, // HTML string from Tiptap
       category,
       image: imageUrl,
       date,

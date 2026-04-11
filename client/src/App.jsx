@@ -7,10 +7,9 @@ import {
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-// --- MANTINE & TIPTAP SETUP ---
+// --- MANTINE SETUP (Removed Tiptap CSS to prevent crash) ---
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css'; 
-import '@mantine/tiptap/styles.css';
 
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";

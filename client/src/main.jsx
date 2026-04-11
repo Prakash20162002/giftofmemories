@@ -5,7 +5,6 @@ import "react-toastify/dist/ReactToastify.css";
 import App from "./App.jsx";
 import { MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
-import "@mantine/tiptap/styles.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
