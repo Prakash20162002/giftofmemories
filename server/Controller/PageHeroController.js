@@ -21,7 +21,7 @@ const defaultHeroes = {
     backgroundImage: "",
   },
   blog: {
-    title: "Our Blog",
+    title: "Pre-Wedding Planning",
     subtitle: "Blog",
     description:
       "Stories, tips, and inspiration from behind the lens. Discover the art of capturing memories.",

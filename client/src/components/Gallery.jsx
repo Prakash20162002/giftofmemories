@@ -12,6 +12,9 @@ const Gallery = () => {
   const [images, setImages] = useState(defaultGalleryImages);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  
+  // --- NEW: Pause state for the auto-scroller ---
+  const [isPaused, setIsPaused] = useState(false);
 
   const optimizeUrl = (url) => {
     if (!url || !url.includes("cloudinary.com")) return url;
@@ -44,6 +47,7 @@ const Gallery = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   }, [images.length]);
 
+  // Keyboard navigation
   useEffect(() => {
     const handleKey = (e) => {
       if (e.key === "ArrowRight") handleNext();
@@ -54,11 +58,37 @@ const Gallery = () => {
     return () => window.removeEventListener("keydown", handleKey);
   }, [handleNext, handlePrev, isLightboxOpen]);
 
+  // --- NEW: MOBILE AUTO-SCROLL ENGINE ---
+  useEffect(() => {
+    let interval;
+    const startAutoScroll = () => {
+      interval = setInterval(() => {
+        // Only automatically change the slide if screen is Mobile (< 768px) 
+        // AND the user is not actively touching/hovering over it
+        if (window.innerWidth < 768 && !isPaused && !isLightboxOpen) {
+          handleNext();
+        }
+      }, 3500); // 3500ms = 3.5 seconds per slide. Adjust this if you want it faster or slower!
+    };
+
+    startAutoScroll();
+
+    // Clean up the timer when component unmounts or dependencies change
+    return () => clearInterval(interval);
+  }, [handleNext, isPaused, isLightboxOpen]);
+
   const activeImage = images[currentIndex];
 
   return (
-    // FIX 1: Changed h-[75vh] to h-[50vh] for mobile. Keeps md:h-[90vh] for desktop.
-    <section id="portfolio" className="relative h-[50vh] md:h-[90vh] w-full overflow-hidden group border-y border-white/5 bg-charcoal-black">
+    <section 
+      id="portfolio" 
+      // --- NEW: Added touch and mouse events to pause the auto-scroller ---
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      className="relative h-[50vh] md:h-[90vh] w-full overflow-hidden group border-y border-white/5 bg-charcoal-black"
+    >
       <div className="sr-only">
         <h2>Professional Photography Portfolio - Gift of Memories</h2>
       </div>
@@ -75,21 +105,18 @@ const Gallery = () => {
           <img
             src={optimizeUrl(activeImage.src)}
             alt={activeImage.alt}
-            // Added object-top for mobile to prioritize faces instead of just the center
             className="w-full h-full object-cover object-top md:object-center"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/80 via-transparent to-charcoal-black/90" />
         </motion.div>
       </AnimatePresence>
 
-      {/* FIX 2: Reduced pt-12 to pt-6 on mobile so text doesn't take up the whole screen */}
       <div className="absolute top-0 left-0 w-full z-20 text-center pt-6 md:pt-20 px-6 pointer-events-none">
         <h2 className="font-playfair text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-warm-ivory font-bold tracking-tighter drop-shadow-2xl">
           Real <span className="italic text-gold-accent">Wedding Stories</span>
         </h2>
       </div>
 
-      {/* FIX 3: Reduced bottom-16 to bottom-8 on mobile so text fits the shorter height */}
       <div className="absolute bottom-8 md:bottom-20 left-0 w-full z-20 flex flex-col items-center justify-center pointer-events-none px-6 text-center">
         <motion.div 
           key={`meta-${currentIndex}`}

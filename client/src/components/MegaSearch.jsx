@@ -6,7 +6,7 @@ import axios from "axios";
 
 const MegaSearch = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // NEW: Search state
+  const [searchQuery, setSearchQuery] = useState(""); 
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
   const [packages, setPackages] = useState([]);
@@ -31,6 +31,7 @@ const MegaSearch = () => {
     fetchData();
   }, []);
 
+  // Click outside listener (Already perfect!)
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -51,7 +52,6 @@ const MegaSearch = () => {
     return service.package?._id?.toString() || service.package?.toString() || null;
   };
 
-  // NEW: Memoized Filtered Data Logic
   const filteredData = useMemo(() => {
     const query = searchQuery.toLowerCase();
     
@@ -85,7 +85,7 @@ const MegaSearch = () => {
 
   return (
     <div ref={menuRef} className="relative z-[100] w-full max-w-5xl mx-auto">
-      {/* Search Bar Trigger - Now with Input */}
+      {/* Search Bar Trigger */}
       <motion.div
         className={`flex items-center justify-between px-4 md:px-6 py-3 md:py-4 transition-all duration-300 ${
           isOpen
@@ -110,11 +110,21 @@ const MegaSearch = () => {
 
         <div className="flex items-center gap-2 shrink-0">
           {searchQuery && (
-            <button onClick={() => setSearchQuery("")} className="p-1 hover:bg-black/10 rounded-full transition-colors">
+            <button onClick={() => setSearchQuery("")} className="p-1 hover:bg-black/10 rounded-full transition-colors cursor-pointer">
               <X size={16} />
             </button>
           )}
-          {isOpen ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+          
+          {/* THE FIX: Wrapped the Chevron in a button with an explicit toggle onClick */}
+          <button 
+            onClick={(e) => {
+              e.preventDefault(); 
+              setIsOpen(!isOpen); // Toggles state between true and false
+            }} 
+            className="p-1 rounded-full hover:bg-black/5 transition-colors cursor-pointer"
+          >
+            {isOpen ? <ChevronUp className="w-5 h-5 text-charcoal-black" /> : <ChevronDown className="w-4 h-4 text-gray-400 hover:text-charcoal-black" />}
+          </button>
         </div>
       </motion.div>
 
@@ -199,10 +209,10 @@ const MegaSearch = () => {
 
             {/* Bottom Navigation */}
             <div className="bg-gray-50 px-4 md:px-6 py-3 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-gray-100">
-              <button onClick={() => { navigate("/services"); setIsOpen(false); }} className="text-xs text-gold-accent hover:text-charcoal-black font-bold uppercase tracking-widest transition-colors">
+              <button onClick={() => { navigate("/services"); setIsOpen(false); }} className="text-xs text-gold-accent hover:text-charcoal-black font-bold uppercase tracking-widest transition-colors cursor-pointer">
                 View All Experiences →
               </button>
-              <button onClick={() => { navigate("/shop"); setIsOpen(false); }} className="text-xs text-gold-accent hover:text-charcoal-black font-bold uppercase tracking-widest transition-colors">
+              <button onClick={() => { navigate("/shop"); setIsOpen(false); }} className="text-xs text-gold-accent hover:text-charcoal-black font-bold uppercase tracking-widest transition-colors cursor-pointer">
                 View Samogri Shop →
               </button>
             </div>

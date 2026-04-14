@@ -18,7 +18,7 @@ const BlogPage = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroData, setHeroData] = useState({
-    title: "Our Blog",
+    title: "Pre-Wedding Planning",
     description: "Stories, tips, and inspiration from behind the lens. Discover the art of capturing memories.",
     breadcrumb: "Gift of Memories • Blog",
     backgroundImage: "",
@@ -125,9 +125,7 @@ const BlogPage = () => {
               >
                 <Link 
                   to={`/blog/${post._id}`} 
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group flex flex-col h-full bg-white rounded-[1.25rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-charcoal-black/5 hover:-translate-y-1"
+                  className="group flex flex-col h-full bg-white rounded-[1.5rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-charcoal-black/5 hover:-translate-y-1"
                 >
                   
                   <div className="w-full aspect-[16/9] overflow-hidden relative bg-charcoal-black/5">
