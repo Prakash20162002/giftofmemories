@@ -32,7 +32,7 @@ const CTASection = () => {
           </p>
           
           <motion.a
-            href="mailto:hello@giftofmemories.com"
+            href="mailto:thegiftofmemories.clicks@gmail.com"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             /* 5. Improved button: rounded ends, better mobile padding, and a high-contrast hover state */

@@ -42,10 +42,10 @@ const HomeCTA = () => {
                 </h3>
                 {/* Clickable Email Link */}
                 <a 
-                  href="mailto:hello@giftofmemories.com" 
+                  href="mailto:thegiftofmemories.clicks@gmail.com" 
                   className="hover:text-gold-accent transition-colors duration-200"
                 >
-                  hello@giftofmemories.com
+                  thegiftofmemories.clicks@gmail.com
                 </a>
               </div>
               <div>
