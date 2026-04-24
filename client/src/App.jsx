@@ -7,9 +7,13 @@ import {
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 
-// --- MANTINE SETUP (Removed Tiptap CSS to prevent crash) ---
+// --- MANTINE SETUP ---
 import { MantineProvider, createTheme } from '@mantine/core';
 import '@mantine/core/styles.css'; 
+
+// --- ANALYTICS PACKAGES ---
+import ReactGA from "react-ga4";
+import ReactPixel from "react-facebook-pixel";
 
 import LoadingScreen from "./components/LoadingScreen";
 import Navbar from "./components/Navbar";
@@ -111,6 +115,29 @@ const navLinks = [
 const AppContent = () => {
   const location = useLocation();
   
+  // --- TRACKING SCRIPTS SETUP ---
+  
+  // 1. Initialize Analytics (Runs only once on load)
+  useEffect(() => {
+    // Initialize Google Analytics
+    ReactGA.initialize("G-E2MTBMXSJP");
+
+    // Initialize Facebook Pixel
+    const fbOptions = {
+      autoConfig: true, 
+      debug: false, 
+    };
+    ReactPixel.init("1329153594100509", undefined, fbOptions);
+  }, []);
+
+  // 2. Track Route Changes (Fires every time the user clicks to a new page)
+  useEffect(() => {
+    ReactGA.send({ hitType: "pageview", page: location.pathname });
+    ReactPixel.pageView();
+  }, [location.pathname]);
+
+  // -----------------------------
+
   const hideNavbarRoutes = [
     "/admin-portal-secret", "/dashboard", "/admin-popups", "/admin-blogs",
     "/admin-enquiries", "/admin-testimonials", "/admin-services", "/admin-hero",
@@ -170,7 +197,6 @@ const AppContent = () => {
           <Route path="/book" element={<BookingForm />} />
           <Route path="/contact-leads" element={<LeadCapture />} />
           
-          {/* FIXED ROUTE: Matches the ProductCategoryGrid and Navbar navigation */}
           <Route path="/shop/product/:id" element={<ProductDetailsPage />} />
 
           <Route element={<ProtectedRoute />}>
