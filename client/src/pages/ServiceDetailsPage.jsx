@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, ArrowLeft, Clock, PackageCheck, Sparkles } from "lucide-react";
+import { ChevronRight, ArrowLeft, Clock, Sparkles } from "lucide-react";
 import axios from "axios";
 import ServiceSidebar from "../components/services/ServiceSidebar";
 import ServiceBookingForm from "../components/services/ServiceBookingForm";
@@ -19,7 +19,7 @@ const ServiceDetailsPage = () => {
   // Extract numeric price from string safely
   const extractPrice = (priceString) => {
     if (!priceString) return 0;
-    const match = priceString.match(/[\d,]+/);
+    const match = String(priceString).match(/[\d,]+/);
     return match ? parseInt(match[0].replace(/,/g, "")) : 0;
   };
 
@@ -55,9 +55,6 @@ const ServiceDetailsPage = () => {
   if (!service) {
     return (
       <div className="min-h-screen pt-32 pb-20 bg-warm-ivory/30 flex flex-col items-center justify-center text-center px-6">
-        <div className="w-20 h-20 bg-charcoal-black/5 rounded-full flex items-center justify-center mb-6">
-          <PackageCheck size={32} className="text-slate-gray/50" />
-        </div>
         <h2 className="font-playfair text-3xl md:text-4xl text-charcoal-black font-bold mb-4">Service Not Found</h2>
         <p className="font-inter text-slate-gray mb-8 max-w-md">This package may have been removed or updated.</p>
         <Link to="/services" className="px-8 py-3.5 bg-charcoal-black text-gold-accent uppercase tracking-widest text-[10px] font-bold rounded-xl hover:bg-gold-accent hover:text-charcoal-black transition-all shadow-lg">
@@ -164,8 +161,9 @@ const ServiceDetailsPage = () => {
                         <div className="w-full h-full" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, #C9A24D 1px, transparent 0)`, backgroundSize: "24px 24px" }} />
                       </div>
 
+                      {/* CLIENT FIX: Renamed to Package Details */}
                       <h3 className="relative z-10 font-playfair font-bold text-2xl md:text-3xl text-warm-ivory mb-8 flex items-center gap-4">
-                        Service Details
+                        Package Details
                       </h3>
 
                       <ul className="relative z-10 space-y-4">
@@ -175,8 +173,9 @@ const ServiceDetailsPage = () => {
                             <span className="text-gold-accent font-bold">₹</span>
                           </div>
                           <div>
+                            {/* CLIENT FIX: Renamed Investment to Price */}
                             <span className="text-warm-ivory/60 text-[10px] md:text-xs uppercase tracking-widest font-bold block mb-1">
-                              Investment {isClientLoggedIn && "(Your Discounted Rate)"}
+                              Price {isClientLoggedIn && "(Your Discounted Rate)"}
                             </span>
                             {isClientLoggedIn && extractPrice(service.price) > 0 ? (
                               <div className="flex items-baseline gap-3">
@@ -209,21 +208,9 @@ const ServiceDetailsPage = () => {
                             </p>
                           </div>
                         </li>
-
-                        {/* Deliverables Row */}
-                        <li className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-6 p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
-                          <div className="w-10 h-10 rounded-xl bg-gold-accent/20 flex items-center justify-center shrink-0">
-                            <PackageCheck size={18} className="text-gold-accent" />
-                          </div>
-                          <div>
-                            <span className="text-warm-ivory/60 text-[10px] md:text-xs uppercase tracking-widest font-bold block mb-1">
-                              Deliverables
-                            </span>
-                            <p className="text-warm-ivory font-semibold text-sm md:text-base leading-relaxed break-words">
-                              {service.details?.deliverables || "Standard package deliverables"}
-                            </p>
-                          </div>
-                        </li>
+                        
+                        {/* CLIENT FIX: Deliverables Row completely removed! */}
+                        
                       </ul>
                     </div>
 

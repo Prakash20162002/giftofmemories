@@ -1,8 +1,12 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
-const defaultTestimonials = [
+// ==========================================
+// 📝 MANUAL TESTIMONIALS LIST
+// To change the reviews, simply edit the text, author, and role below.
+// You can copy and paste a block to add more!
+// ==========================================
+const testimonials = [
   {
     id: 1,
     text: "Absolutely stunning photos. The way they captured the light and emotion of our wedding day was magical. We couldn't be happier.",
@@ -32,39 +36,10 @@ const defaultTestimonials = [
 const STAR_COUNT = 5;
 
 const Testimonials = () => {
-  const [testimonials, setTestimonials] = useState(defaultTestimonials);
-
-  useEffect(() => {
-    const fetchTestimonials = async () => {
-      try {
-        const res = await fetch(
-          `${import.meta.env.VITE_NODE_URL}/api/testimonial/testimonials`
-        );
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data.length > 0) {
-            const mapped = data.map((t) => ({
-              id: t._id,
-              text: t.feedback,
-              author: t.name,
-              role: t.title || "",
-              image: t.image,
-            }));
-            setTestimonials(mapped);
-          }
-        }
-      } catch (e) {
-        console.warn("Failed to load testimonials", e);
-      }
-    };
-    fetchTestimonials();
-  }, []);
-
-  // FIX 1: Duplicate exactly once to create a perfect 50% split for Framer Motion
+  // Duplicate exactly once to create a perfect 50% split for the infinite scroll
   const seamlessTestimonials = [...testimonials, ...testimonials];
 
   return (
-    // Scaled down padding for mobile
     <section className="py-16 md:py-24 bg-charcoal-black text-warm-ivory relative overflow-hidden">
       
       {/* Header */}
@@ -87,23 +62,19 @@ const Testimonials = () => {
       </div>
 
       {/* Marquee Container */}
-      {/* FIX 3: Replaced mask-linear-gradient with an inline Tailwind gradient for guaranteed edge-fading */}
       <div className="relative w-full overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]">
         <motion.div
           className="flex gap-6 md:gap-8 w-max"
-          // FIX 1 (Cont.): Animating exactly 50% guarantees a completely invisible reset
           animate={{ x: "-50%" }}
           transition={{
-            duration: 40, // Slightly slowed down so mobile users can read it easier
+            duration: 40, // Adjust this number to make the scroll faster or slower
             repeat: Infinity,
             ease: "linear",
           }}
         >
           {seamlessTestimonials.map((testimonial, index) => (
             <div
-              // Updated key to ensure no React rendering conflicts
               key={`testimonial-${index}`}
-              // FIX 2: Sized down to 280px on small screens so they fit perfectly
               className="w-[280px] sm:w-[350px] md:w-[450px] p-6 md:p-8 shrink-0 select-none bg-white/5 rounded-2xl border border-white/10"
             >
               {/* Stars */}

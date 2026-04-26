@@ -6,7 +6,6 @@ import ServiceFilter from "../components/services/ServiceFilter";
 import ServiceCategoryGrid from "../components/services/ServiceCategoryGrid";
 import CustomPackageCTA from "../components/services/CustomPackageCTA";
 import ServiceTrustStrip from "../components/services/ServiceTrustStrip";
-// FIX 1: Removed the MostBookedPackages import
 import PageVideoSection from "../components/PageVideoSection";
 
 const ServicesPage = () => {
@@ -24,9 +23,7 @@ const ServicesPage = () => {
         const [servicesResponse, packagesResponse] = await Promise.all([
           axios.get(`${import.meta.env.VITE_NODE_URL}/api/services/services`),
           axios.get(
-            `${
-              import.meta.env.VITE_NODE_URL
-            }/api/services/packages-with-services`,
+            `${import.meta.env.VITE_NODE_URL}/api/services/packages-with-services`
           ),
         ]);
         setServices(servicesResponse.data);
@@ -40,15 +37,16 @@ const ServicesPage = () => {
     fetchData();
   }, []);
 
-  // Filter packages based on active filters
+  // BUG FIX: Rewrote the filter logic so it doesn't accidentally empty the catalogue
   const filteredPackages = packages
     .map((pkg) => {
       let filteredServices = pkg.services || [];
 
-      // Apply price range filter
+      // Apply price range filter SAFELY by forcing it to a string first
       if (activeFilter.priceRange) {
         filteredServices = filteredServices.filter((service) => {
-          const priceMatch = service.price?.match(/[\d,]+/);
+          const priceString = String(service.price || "0");
+          const priceMatch = priceString.match(/[\d,]+/);
           if (!priceMatch) return true;
           const price = parseInt(priceMatch[0].replace(/,/g, ""));
           return (
@@ -65,9 +63,15 @@ const ServicesPage = () => {
     })
     .filter((pkg) => {
       if (activeFilter.packageId === "all") return true;
-      return pkg._id === activeFilter.packageId;
+      
+      // FIXED: Checking BOTH the package ID and the package Title, because your 
+      // filter buttons send the Title (e.g. "WEDDING") instead of the database ID!
+      return (
+        String(pkg._id) === String(activeFilter.packageId) ||
+        String(pkg.title).toLowerCase() === String(activeFilter.packageId).toLowerCase()
+      );
     })
-    .filter((pkg) => pkg.services.length > 0); 
+    .filter((pkg) => pkg.services && pkg.services.length > 0); 
 
   return (
     <motion.main
@@ -76,15 +80,11 @@ const ServicesPage = () => {
       exit={{ opacity: 0 }}
       className="bg-warm-ivory min-h-screen selection:bg-gold-accent selection:text-white"
     >
-      {/* SEO HELPER: Screen-reader only H1 for better Google Indexing */}
       <h1 className="sr-only">
         Premium Wedding Photography & Cinematography Services in Kolkata - Gift of Memories
       </h1>
 
-      {/* Hero Section */}
       <ServiceHero />
-
-      {/* FIX 2: Completely removed the "Most Booked Packages" section so it doesn't interrupt the page flow */}
 
       {/* Cinematic Video Section */}
       <section aria-label="The Cinematic Experience" className="bg-charcoal-black border-y border-charcoal-black/5">
@@ -96,7 +96,6 @@ const ServicesPage = () => {
       </section>
 
       {/* Main Services Filter & Grid */}
-      {/* FIX 3: Adjusted padding to connect smoothly to the video section above it */}
       <section 
         aria-label="Explore Our Services" 
         className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
@@ -119,7 +118,6 @@ const ServicesPage = () => {
           packages={packages}
         />
         
-        {/* All packages now render exclusively here in the beautiful grid we built! */}
         <div className="mt-12 md:mt-16">
           <ServiceCategoryGrid
             packages={filteredPackages}
