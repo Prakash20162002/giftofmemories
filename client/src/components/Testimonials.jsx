@@ -1,12 +1,9 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 
-// ==========================================
-// 📝 MANUAL TESTIMONIALS LIST
-// To change the reviews, simply edit the text, author, and role below.
-// You can copy and paste a block to add more!
-// ==========================================
-const testimonials = [
+// Fallback testimonials just in case the database is empty or loading
+const defaultTestimonials = [
   {
     id: 1,
     text: "Absolutely stunning photos. The way they captured the light and emotion of our wedding day was magical. We couldn't be happier.",
@@ -25,17 +22,42 @@ const testimonials = [
     author: "Elena Rossi",
     role: "Fashion Director",
   },
-  {
-    id: 4,
-    text: "Simply the best. Professional, creative, and a joy to work with. Our family photos are treasures we will cherish forever.",
-    author: "The Thompson Family",
-    role: "Family Session",
-  },
 ];
 
 const STAR_COUNT = 5;
 
 const Testimonials = () => {
+  // 1. Setup State to hold the dynamic testimonials
+  const [testimonials, setTestimonials] = useState(defaultTestimonials);
+
+  // 2. Fetch from Database on Component Load
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const res = await fetch(
+          `${import.meta.env.VITE_NODE_URL}/api/testimonial/testimonials`
+        );
+        if (res.ok) {
+          const data = await res.json();
+          // Only update if the database actually returns reviews
+          if (Array.isArray(data) && data.length > 0) {
+            const mapped = data.map((t) => ({
+              id: t._id,
+              text: t.feedback,
+              author: t.name,
+              role: t.title || "",
+              image: t.image,
+            }));
+            setTestimonials(mapped);
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to load testimonials from database, using defaults.", e);
+      }
+    };
+    fetchTestimonials();
+  }, []);
+
   // Duplicate exactly once to create a perfect 50% split for the infinite scroll
   const seamlessTestimonials = [...testimonials, ...testimonials];
 
