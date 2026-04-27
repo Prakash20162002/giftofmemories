@@ -98,16 +98,20 @@ const ServicesPage = () => {
       {/* Main Services Filter & Grid */}
       <section 
         aria-label="Explore Our Services" 
-        className="pt-16 pb-20 md:pt-24 md:pb-32 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
+        /* FIX: Drastically reduced top and bottom padding */
+        className="pt-8 pb-12 md:pt-12 md:pb-20 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
       >
-        <div className="text-center mb-12 md:mb-16">
-            <span className="text-gold-accent font-inter text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-4 block">
+        {/* FIX: Reduced margin below the text block */}
+        <div className="text-center mb-8 md:mb-10">
+            <span className="text-gold-accent font-inter text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-2 block">
               Tailored for You
             </span>
-            <h2 className="font-playfair text-4xl md:text-5xl lg:text-6xl text-charcoal-black font-bold mb-6">
+            {/* FIX: Slightly tightened the heading size and bottom margin */}
+            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-charcoal-black font-bold mb-3">
               Curated Service Collections
             </h2>
-            <p className="font-inter text-slate-gray text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed">
+            {/* FIX: Made the paragraph slightly more compact */}
+            <p className="font-inter text-slate-gray text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
               From intimate haldi ceremonies to grand wedding receptions, explore our bespoke photography and filmmaking packages designed to capture the essence of your most cherished moments.
             </p>
         </div>
@@ -118,7 +122,8 @@ const ServicesPage = () => {
           packages={packages}
         />
         
-        <div className="mt-12 md:mt-16">
+        {/* FIX: Reduced the gap between the filter buttons and the grid */}
+        <div className="mt-8 md:mt-10">
           <ServiceCategoryGrid
             packages={filteredPackages}
             isLoading={isLoading}

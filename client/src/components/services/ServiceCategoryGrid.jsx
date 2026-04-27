@@ -28,10 +28,11 @@ const ServiceCategoryGrid = ({ packages, isLoading }) => {
 
   return (
     <div 
-      className={`grid gap-6 w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 items-start ${
+      /* FIX: Forced grid-cols-2 on mobile, tightened mobile gaps and paddings */
+      className={`grid gap-3 md:gap-6 w-full max-w-[90rem] mx-auto px-2 sm:px-6 lg:px-8 items-start ${
         isServicesPage 
-          ? "grid-cols-1 md:grid-cols-2" // 2-column layout for the clean 'Menu' look
-          : (packages.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3") 
+          ? "grid-cols-2" // Always 2 columns on mobile and desktop
+          : (packages.length === 1 ? "grid-cols-1" : "grid-cols-2 lg:grid-cols-3") 
       }`}
     >
       {packages.map((pkg) => (
@@ -44,34 +45,34 @@ const ServiceCategoryGrid = ({ packages, isLoading }) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/* VARIANT 1: HOME PAGE STYLE (Standard Grid)                                 */
+/* VARIANT 1: HOME PAGE STYLE                                                 */
 /* -------------------------------------------------------------------------- */
 const ServiceCardHome = ({ category, isSingle }) => {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
 
   return (
-    <motion.div layout className="bg-white rounded-2xl md:rounded-[2.5rem] shadow-sm border border-charcoal-black/5 overflow-hidden h-fit">
+    <motion.div layout className="bg-white rounded-xl md:rounded-[2.5rem] shadow-sm border border-charcoal-black/5 overflow-hidden h-fit">
       <div role="button" onClick={() => setIsOpen(!isOpen)} className="cursor-pointer flex flex-col group bg-white">
-        <div className="h-48 sm:h-56 md:h-64 relative overflow-hidden">
+        <div className="h-32 sm:h-56 md:h-64 relative overflow-hidden">
           <img src={category.image} alt={category.title} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-          <div className="absolute top-3 right-3 z-30">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white shadow-lg text-gold-accent">
-              <Plus size={16} />
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
+            <div className="w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center bg-white shadow-lg text-gold-accent">
+              <Plus size={14} />
             </div>
           </div>
         </div>
-        <div className="p-5 md:p-8">
-          <span className="text-[9px] font-bold uppercase tracking-widest text-gold-accent mb-2 block">Curated Menu</span>
-          <h3 className="font-playfair font-bold text-charcoal-black text-2xl group-hover:text-gold-accent">{category.title}</h3>
+        <div className="p-3 md:p-8">
+          <span className="text-[8px] md:text-[9px] font-bold uppercase tracking-widest text-gold-accent mb-1 md:mb-2 block">Curated Menu</span>
+          <h3 className="font-playfair font-bold text-charcoal-black text-sm md:text-2xl group-hover:text-gold-accent">{category.title}</h3>
         </div>
       </div>
       <AnimatePresence>
         {isOpen && (
-          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="bg-warm-ivory/10 border-t border-charcoal-black/5 p-4">
+          <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="bg-warm-ivory/10 border-t border-charcoal-black/5 p-3 md:p-4">
              {category.services?.map((s) => (
-                <button key={s._id} onClick={() => navigate(`/services/${s._id}`)} className="w-full flex items-center justify-between p-3 bg-white rounded-xl mb-2 text-left border border-charcoal-black/5">
-                  <span className="font-playfair font-bold text-sm">{s.title}</span>
+                <button key={s._id} onClick={() => navigate(`/services/${s._id}`)} className="w-full flex items-center justify-between p-2 md:p-3 bg-white rounded-lg md:rounded-xl mb-2 text-left border border-charcoal-black/5 hover:border-gold-accent/30 transition-colors">
+                  <span className="font-playfair font-bold text-xs md:text-sm text-charcoal-black">{s.title}</span>
                   <ArrowRight size={12} className="text-gold-accent" />
                 </button>
              ))}
@@ -83,10 +84,9 @@ const ServiceCardHome = ({ category, isSingle }) => {
 };
 
 /* -------------------------------------------------------------------------- */
-/* VARIANT 2: SERVICES PAGE STYLE (Horizontal & Expandable)                   */
+/* VARIANT 2: SERVICES PAGE STYLE                                             */
 /* -------------------------------------------------------------------------- */
 const ServiceCardDetailed = ({ category }) => {
-  // FIXED: Strictly false by default so it opens exactly like your first image
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const serviceCount = category.services?.length || 0;
@@ -95,82 +95,79 @@ const ServiceCardDetailed = ({ category }) => {
     <motion.div
       layout
       transition={{ layout: { duration: 0.4, type: "spring", bounce: 0 } }}
-      className={`bg-white rounded-[1.5rem] md:rounded-[2.2rem] border border-charcoal-black/5 overflow-hidden flex flex-col transition-all hover:shadow-xl ${
-        isOpen ? "md:col-span-2" : "col-span-1"
+      /* FIX: If expanded, it spans both columns on mobile so the grid stays neat! */
+      className={`bg-white rounded-2xl md:rounded-[2.2rem] border border-charcoal-black/5 overflow-hidden flex flex-col transition-all hover:shadow-lg ${
+        isOpen ? "col-span-2" : "col-span-1"
       }`}
     >
-      {/* HEADER SECTION (Matches Image 1) */}
-      <div onClick={() => setIsOpen(!isOpen)} className="flex flex-col sm:flex-row gap-4 md:gap-8 p-3 md:p-5 cursor-pointer group">
+      <div onClick={() => setIsOpen(!isOpen)} className="flex flex-col sm:flex-row gap-2 md:gap-8 p-2 md:p-5 cursor-pointer group">
         
-        {/* Category Image */}
+        {/* Category Image - Scaled down for mobile */}
         <div className={`relative overflow-hidden rounded-xl md:rounded-[1.5rem] shrink-0 transition-all duration-500 ${
-          isOpen ? "w-full sm:w-[32%] h-48 md:h-64" : "w-full sm:w-[42%] h-48 md:h-56"
+          isOpen ? "w-full sm:w-[32%] h-24 md:h-64" : "w-full sm:w-[42%] h-28 md:h-56"
         }`}>
           <img src={category.image} alt={category.title} className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-105" />
           <div className="absolute inset-0 bg-charcoal-black/5 group-hover:bg-transparent transition-colors duration-500" />
         </div>
 
-        {/* Category Content */}
-        <div className="flex flex-col justify-center py-2 md:py-4 pr-2 md:pr-6 w-full">
-          <h3 className="font-playfair text-2xl md:text-4xl font-bold text-charcoal-black mb-3 group-hover:text-gold-accent transition-colors uppercase tracking-tight">
+        {/* Category Content - Typography scaled down for mobile */}
+        <div className="flex flex-col justify-center py-2 md:py-4 px-1 md:pr-6 w-full">
+          <h3 className="font-playfair text-sm md:text-4xl font-bold text-charcoal-black mb-1 md:mb-3 group-hover:text-gold-accent transition-colors uppercase tracking-tight">
             {category.title}
           </h3>
           
-          <p className="font-inter text-xs md:text-sm text-slate-gray leading-relaxed mb-8 line-clamp-2 md:line-clamp-3">
+          {/* FIX: Hidden on tiny screens to save space, visible on tablet+ */}
+          <p className="hidden sm:block font-inter text-xs md:text-sm text-slate-gray leading-relaxed mb-8 line-clamp-2 md:line-clamp-3">
              Professional {category.title} services tailored to capture your legacy with cinematic precision and authentic emotions.
           </p>
           
-          <div className="mt-auto flex items-center justify-between w-full">
-            {/* View Packages Toggle */}
-            <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-charcoal-black group-hover:text-gold-accent transition-colors">
-              VIEW PACKAGES <ChevronDown size={14} className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+          <div className="mt-auto flex items-center justify-between w-full pt-1 sm:pt-0 border-t sm:border-none border-charcoal-black/5">
+            <div className="flex items-center gap-1 md:gap-2 text-[8px] md:text-xs font-bold uppercase tracking-wider md:tracking-[0.2em] text-charcoal-black group-hover:text-gold-accent transition-colors pt-2 sm:pt-0">
+              VIEW <ChevronDown size={12} className={`md:w-3.5 md:h-3.5 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
             </div>
-
-            {/* Package Count Label */}
-            <div className="flex items-center gap-2">
-               <span className="text-[9px] md:text-[10px] font-bold text-slate-gray/50 uppercase tracking-widest px-3 py-1 bg-warm-ivory/50 rounded-md">
-                 {serviceCount} {serviceCount === 1 ? "Package" : "Packages"}
+            <div className="flex items-center pt-2 sm:pt-0">
+               <span className="text-[7px] md:text-[10px] font-bold text-slate-gray/60 uppercase tracking-widest px-2 md:px-3 py-1 bg-charcoal-black/5 rounded-md">
+                 {serviceCount} PKGS
                </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* EXPANDED SECTION (Matches Image 2) */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden bg-warm-ivory/20 border-t border-charcoal-black/5"
+            className="overflow-hidden bg-[#FAF9F6] border-t border-charcoal-black/5"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-5 md:p-10">
+            {/* FIX: grid-cols-2 on mobile, grid-cols-4 on desktop */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 p-3 md:p-8">
               {category.services?.map((service) => (
                 <button
                   key={service._id}
                   onClick={(e) => { e.stopPropagation(); navigate(`/services/${service._id}`); }}
-                  className="group bg-white p-6 rounded-[1.5rem] border border-charcoal-black/5 hover:border-gold-accent/40 flex flex-col text-left transition-all hover:shadow-xl hover:-translate-y-1"
+                  className="group bg-white p-3 md:p-6 rounded-xl md:rounded-2xl border border-charcoal-black/5 flex flex-col text-left transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gold-accent/40"
                 >
-                  {/* Sub-package icon placeholder (The 'B' circle in your image) */}
-                  <div className="w-12 h-12 rounded-xl bg-warm-ivory/50 p-2 mb-5 shrink-0 flex items-center justify-center">
-                    {service.logo ? (
-                        <img src={service.logo} className="w-full h-full object-contain" />
+                  <div className="w-8 h-8 md:w-14 md:h-14 rounded-lg md:rounded-xl overflow-hidden bg-warm-ivory/50 mb-3 md:mb-5 shrink-0 flex items-center justify-center border border-charcoal-black/5">
+                    {service.logo || service.image ? (
+                        <img src={service.logo || service.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" alt="" />
                     ) : (
-                        <div className="text-gold-accent font-playfair font-bold text-xl">{service.title[0]}</div>
+                        <div className="text-gold-accent font-playfair font-bold text-sm md:text-2xl">{service.title[0]}</div>
                     )}
                   </div>
                   
-                  <h4 className="font-playfair font-bold text-lg md:text-xl text-charcoal-black mb-1 group-hover:text-gold-accent transition-colors uppercase">
+                  <h4 className="font-playfair font-bold text-[11px] md:text-xl text-charcoal-black mb-1 md:mb-2 group-hover:text-gold-accent transition-colors uppercase line-clamp-2 leading-tight">
                     {service.title}
                   </h4>
                   
-                  <p className="text-[10px] md:text-[11px] text-slate-gray mb-6 font-inter leading-relaxed">
+                  <p className="text-[8px] md:text-xs text-slate-gray mb-3 md:mb-6 font-inter leading-relaxed opacity-80 line-clamp-2">
                     Explore specific inclusions & pricing
                   </p>
                   
-                  <div className="mt-auto pt-4 border-t border-charcoal-black/5 flex justify-between items-center text-[9px] md:text-[10px] font-black uppercase tracking-widest text-charcoal-black/40 group-hover:text-gold-accent">
-                    DETAILS <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                  <div className="mt-auto pt-2 md:pt-4 border-t border-charcoal-black/5 w-full flex justify-between items-center text-[7px] md:text-[10px] font-black uppercase tracking-widest text-charcoal-black/40 group-hover:text-gold-accent transition-colors">
+                    DETAILS <ArrowRight size={10} className="md:w-3.5 md:h-3.5 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
               ))}

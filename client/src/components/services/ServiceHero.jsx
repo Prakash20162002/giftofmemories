@@ -37,15 +37,14 @@ const ServiceHero = () => {
     <motion.section
       initial="initial"
       whileHover="hover"
-      // FIX 3: Adjusted height for mobile (60vh) vs desktop (55vh) for better proportions
-      className="relative h-[60vh] md:h-[55vh] w-full overflow-hidden bg-charcoal-black flex items-center justify-center"
+      /* FIX: Removed the margin-top (mt) and added padding-top (pt-20) so the image hits the very top of the screen perfectly! */
+      className="relative h-[45vh] md:h-[40vh] w-full overflow-hidden bg-charcoal-black flex items-center justify-center pt-20 md:pt-24" 
     >
       {/* Background Image Container */}
       <div className="absolute inset-0 w-full h-full z-0">
         <motion.img
           variants={{
             initial: { scale: 1, opacity: 0.6 },
-            // FIX 1: Replaced the 'jittery x-axis shake' with a smooth cinematic zoom
             hover: {
               scale: 1.1,
               opacity: 0.8,
@@ -56,7 +55,6 @@ const ServiceHero = () => {
           alt="Photography Services"
           className="w-full h-full object-cover"
         />
-        {/* FIX 2: Added a dual-layer gradient for better text contrast across all image types */}
         <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/70 via-charcoal-black/40 to-charcoal-black/80" />
       </div>
 
@@ -64,10 +62,10 @@ const ServiceHero = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} // Cinematic ease
+          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} 
         >
-          {/* Breadcrumbs - Moved above Title for a more modern 'editorial' look */}
-          <div className="flex items-center justify-center space-x-2 text-[10px] md:text-xs font-inter uppercase tracking-[0.3em] text-gold-accent mb-4 md:mb-6 font-bold">
+          {/* Breadcrumbs */}
+          <div className="flex items-center justify-center space-x-2 text-[9px] md:text-[10px] font-inter uppercase tracking-[0.3em] text-gold-accent mb-3 font-bold">
             <Link to="/" className="hover:text-warm-ivory transition-colors">
               {breadcrumbParts[0]?.trim()}
             </Link>
@@ -77,18 +75,18 @@ const ServiceHero = () => {
             </span>
           </div>
 
-          <h1 className="font-playfair text-4xl md:text-6xl lg:text-7xl text-warm-ivory mb-6 font-bold tracking-tight drop-shadow-xl">
+          <h1 className="font-playfair text-3xl md:text-5xl lg:text-6xl text-warm-ivory mb-4 font-bold tracking-tight drop-shadow-xl">
             {heroData.title}
           </h1>
           
-          <p className="font-inter text-base md:text-xl text-muted-beige/90 mb-8 font-light max-w-2xl mx-auto leading-relaxed">
+          <p className="font-inter text-sm md:text-base text-muted-beige/90 mb-6 font-light max-w-2xl mx-auto leading-relaxed">
             {heroData.description}
           </p>
 
           {/* Decorative Divider Line */}
           <motion.div 
             initial={{ width: 0 }}
-            animate={{ width: "80px" }}
+            animate={{ width: "60px" }}
             transition={{ delay: 0.5, duration: 0.8 }}
             className="h-[1px] bg-gold-accent mx-auto"
           />
