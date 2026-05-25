@@ -28,7 +28,11 @@ server/dist
 # =====================
 client/.env
 server/.env
+client/env
+server/env
 .env
+**/env
+**/.env
 
 # =====================
 # Editor & OS files
