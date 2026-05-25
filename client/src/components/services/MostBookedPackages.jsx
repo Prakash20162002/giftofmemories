@@ -177,7 +177,7 @@ const PackageCard = ({ category, index }) => {
                 {category.services.map((service) => (
                   <button
                     key={service._id}
-                    onClick={() => navigate(`/services/${service._id}`)}
+                    onClick={() => navigate(`/services/${service.slug || service._id}`)}
                     className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-amber-500/10 border border-transparent hover:border-amber-500/30 transition-all duration-200 text-left group/service"
                   >
                     {service.logo ? (

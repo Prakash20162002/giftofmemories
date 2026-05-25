@@ -15,7 +15,7 @@ const ServiceCard = ({ service }) => {
   const discountedPrice = Math.round(originalPrice * 0.85);
   
   // Hypothetical URL slug
-  const serviceUrl = `/services/${service._id || service.id}`;
+  const serviceUrl = `/services/${service.slug || service._id || service.id}`;
 
   return (
     <motion.div

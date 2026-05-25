@@ -24,7 +24,7 @@ const ProductCard = ({ product, onClick }) => {
   };
 
   const handleCardClick = () => {
-    navigate(`/shop/product/${product._id}`);
+    navigate(`/shop/product/${product.slug || product._id}`);
   };
 
   const media = product.preview || product.media?.[0];

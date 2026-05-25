@@ -70,7 +70,7 @@ const ServiceCardHome = ({ category, isSingle }) => {
         {isOpen && (
           <motion.div initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="bg-warm-ivory/10 border-t border-charcoal-black/5 p-3 md:p-4">
              {category.services?.map((s) => (
-                <button key={s._id} onClick={() => navigate(`/services/${s._id}`)} className="w-full flex items-center justify-between p-2 md:p-3 bg-white rounded-lg md:rounded-xl mb-2 text-left border border-charcoal-black/5 hover:border-gold-accent/30 transition-colors">
+                <button key={s._id} onClick={() => navigate(`/services/${s.slug || s._id}`)} className="w-full flex items-center justify-between p-2 md:p-3 bg-white rounded-lg md:rounded-xl mb-2 text-left border border-charcoal-black/5 hover:border-gold-accent/30 transition-colors">
                   <span className="font-playfair font-bold text-xs md:text-sm text-charcoal-black">{s.title}</span>
                   <ArrowRight size={12} className="text-gold-accent" />
                 </button>
@@ -143,7 +143,7 @@ const ServiceCardDetailed = ({ category }) => {
               {category.services?.map((service) => (
                 <button
                   key={service._id}
-                  onClick={(e) => { e.stopPropagation(); navigate(`/services/${service._id}`); }}
+                  onClick={(e) => { e.stopPropagation(); navigate(`/services/${service.slug || service._id}`); }}
                   className="group bg-white p-3 md:p-5 rounded-xl md:rounded-2xl border border-charcoal-black/5 flex flex-col text-left transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-gold-accent/40"
                 >
                   

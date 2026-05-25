@@ -280,9 +280,44 @@
 //     res.status(500).json({ message: "Server Error", error: error.message });
 //   }
 // };
+import mongoose from "mongoose";
 import { Shop } from "../Model/Shop.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+
+const generateUniqueSlug = async (name, Model, currentId = null) => {
+  let slug = name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special chars
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+
+  if (slug.length > 50) {
+    const lastHyphenIndex = slug.substring(0, 50).lastIndexOf('-');
+    if (lastHyphenIndex > 10) {
+      slug = slug.substring(0, lastHyphenIndex);
+    } else {
+      slug = slug.substring(0, 50);
+    }
+  }
+
+  let uniqueSlug = slug;
+  let counter = 1;
+  while (true) {
+    const query = { slug: uniqueSlug };
+    if (currentId) {
+      query._id = { $ne: currentId };
+    }
+    const existing = await Model.findOne(query);
+    if (!existing) {
+      break;
+    }
+    uniqueSlug = `${slug}-${counter}`;
+    counter++;
+  }
+  return uniqueSlug;
+};
 
 /* ---------------- HELPER: CLOUDINARY UPLOAD ---------------- */
 
@@ -313,7 +348,21 @@ export const getAllProducts = async (req, res) => {
       .populate("category", "name")
       .sort({ createdAt: -1 });
 
-    res.status(200).json(products);
+    // Auto-migrate legacy products missing a slug
+    let updatedAny = false;
+    for (const product of products) {
+      if ((!product.slug || product.slug.length > 50) && product.name) {
+        product.slug = await generateUniqueSlug(product.name, Shop, product._id);
+        await product.save();
+        updatedAny = true;
+      }
+    }
+
+    const finalProducts = updatedAny
+      ? await Shop.find({ isActive: true }).populate("category", "name").sort({ createdAt: -1 })
+      : products;
+
+    res.status(200).json(finalProducts);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -338,8 +387,17 @@ export const getAllProductsAdmin = async (req, res) => {
 export const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
-
-    const product = await Shop.findById(id).populate("category", "name");
+    let product;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        product = await Shop.findById(id).populate("category", "name");
+      } catch (err) {
+        // Fallback to slug search on cast error
+      }
+    }
+    if (!product) {
+      product = await Shop.findOne({ slug: id }).populate("category", "name");
+    }
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
@@ -420,8 +478,11 @@ export const addProduct = async (req, res) => {
       mediaUrls.push(result.secure_url);
     }
 
+    const slug = await generateUniqueSlug(name, Shop);
+
     const newProduct = new Shop({
       name,
+      slug,
       description,
       price: Number(price),
       category,
@@ -456,6 +517,10 @@ export const updateProduct = async (req, res) => {
     }
 
     const updateData = { ...req.body };
+
+    if (req.body.name) {
+      updateData.slug = await generateUniqueSlug(req.body.name, Shop, id);
+    }
 
     if (req.files && req.files.length > 0) {
       const mediaUrls = [];

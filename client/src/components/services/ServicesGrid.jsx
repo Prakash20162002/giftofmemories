@@ -78,7 +78,7 @@ const ServicesGrid = ({ activeFilter, services = [] }) => {
                 exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                 transition={{ type: "spring", stiffness: 500, damping: 35, mass: 1 }}
               >
-                <Link to={`/services/${service._id}`} className="block h-full">
+                <Link to={`/services/${service.slug || service._id}`} className="block h-full">
                   <ServiceCard service={service} />
                 </Link>
               </motion.div>

@@ -44,7 +44,7 @@ const MostBookedPackages = ({ services = [] }) => {
               className="w-full max-w-md mx-auto" // Keeps cards from growing too large
             >
               <Link
-                to={`/services/${service.id}`}
+                to={`/services/${service.slug || service.id}`}
                 className="group relative block h-[400px] md:h-[500px] overflow-hidden rounded-[2rem] shadow-lg border border-charcoal-black/5 bg-charcoal-black"
               >
                 {/* Image Layer */}

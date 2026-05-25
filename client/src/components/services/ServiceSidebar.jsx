@@ -63,7 +63,7 @@ const ServiceSidebar = ({ currentServiceId, packageId, packageTitle }) => {
 
         <ul className="space-y-1.5">
           {relatedServices.map((service, index) => {
-            const isActive = service._id === currentServiceId;
+            const isActive = service._id === currentServiceId || service.slug === currentServiceId;
             return (
               <motion.li 
                 key={service._id}
@@ -73,7 +73,7 @@ const ServiceSidebar = ({ currentServiceId, packageId, packageTitle }) => {
                 transition={{ delay: index * 0.05 }}
               >
                 <Link
-                  to={`/services/${service._id}`}
+                  to={`/services/${service.slug || service._id}`}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 group ${
                     isActive
                       ? "bg-charcoal-black text-warm-ivory shadow-lg"

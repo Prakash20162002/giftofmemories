@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 const ServiceSchema = new mongoose.Schema({
   title: String,
+  slug: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   category: String,
   shortDescription: String,
   description: String,

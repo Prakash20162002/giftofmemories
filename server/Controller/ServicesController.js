@@ -1,11 +1,58 @@
+import mongoose from "mongoose";
 import { Service } from "../Model/Service.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 
+const generateUniqueSlug = async (title, Model, currentId = null) => {
+  let slug = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '') // Remove special chars
+    .replace(/[\s_-]+/g, '-') // Replace spaces and underscores with hyphens
+    .replace(/^-+|-+$/g, ''); // Remove leading/trailing hyphens
+
+  if (slug.length > 50) {
+    const lastHyphenIndex = slug.substring(0, 50).lastIndexOf('-');
+    if (lastHyphenIndex > 10) {
+      slug = slug.substring(0, lastHyphenIndex);
+    } else {
+      slug = slug.substring(0, 50);
+    }
+  }
+
+  let uniqueSlug = slug;
+  let counter = 1;
+  while (true) {
+    const query = { slug: uniqueSlug };
+    if (currentId) {
+      query._id = { $ne: currentId };
+    }
+    const existing = await Model.findOne(query);
+    if (!existing) {
+      break;
+    }
+    uniqueSlug = `${slug}-${counter}`;
+    counter++;
+  }
+  return uniqueSlug;
+};
+
 export const getServices = async (req, res) => {
   try {
     const services = await Service.find();
-    res.status(200).json(services);
+    
+    // Auto-migrate legacy services missing a slug
+    let updatedAny = false;
+    for (const service of services) {
+      if ((!service.slug || service.slug.length > 50) && service.title) {
+        service.slug = await generateUniqueSlug(service.title, Service, service._id);
+        await service.save();
+        updatedAny = true;
+      }
+    }
+    
+    const finalServices = updatedAny ? await Service.find() : services;
+    res.status(200).json(finalServices);
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
@@ -74,8 +121,11 @@ export const addService = async (req, res) => {
       }
     }
 
+    const slug = await generateUniqueSlug(title, Service);
+
     const newService = new Service({
       title,
+      slug,
       category,
       shortDescription,
       description,
@@ -99,7 +149,17 @@ export const addService = async (req, res) => {
 export const getServiceById = async (req, res) => {
   try {
     const { id } = req.params;
-    const service = await Service.findById(id).populate("package", "title");
+    let service;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        service = await Service.findById(id).populate("package", "title");
+      } catch (err) {
+        // Fallback to slug search on cast error
+      }
+    }
+    if (!service) {
+      service = await Service.findOne({ slug: id }).populate("package", "title");
+    }
 
     if (!service) {
       return res.status(404).json({ message: "Service not found" });
@@ -131,6 +191,10 @@ export const updateService = async (req, res) => {
       price,
       shortDescription,
     };
+
+    if (title) {
+      updateData.slug = await generateUniqueSlug(title, Service, id);
+    }
 
     if (packageId !== undefined) {
       updateData.package = packageId || null;

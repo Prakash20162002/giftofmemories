@@ -37,9 +37,11 @@ const Navbar = () => {
     { name: "About", path: "/about" },
   ];
 
+  const isHomePage = location.pathname === "/";
+
   return (
     <nav className={`fixed w-full z-50 transition-all duration-500 ${
-      isScrolled || isMenuOpen ? "bg-charcoal-black/95 backdrop-blur-md py-3 shadow-lg" : "bg-transparent py-6"
+      isScrolled || isMenuOpen || !isHomePage ? "bg-charcoal-black/95 backdrop-blur-md py-3 shadow-lg" : "bg-transparent py-6"
     }`}>
       <div className="container mx-auto px-4 md:px-6 xl:px-12 flex items-center justify-between">
         

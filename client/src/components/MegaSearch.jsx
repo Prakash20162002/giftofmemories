@@ -149,7 +149,7 @@ const MegaSearch = () => {
                     {group.services.map((service) => (
                       <button
                         key={service._id}
-                        onClick={() => handleServiceClick(service._id)}
+                        onClick={() => handleServiceClick(service.slug || service._id)}
                         className="font-inter text-xs sm:text-sm text-charcoal-black bg-gray-50 hover:bg-gold-accent hover:text-white px-4 py-2 rounded-full transition-all duration-200 border border-gray-100 hover:border-gold-accent"
                       >
                         {service.title}
@@ -169,7 +169,7 @@ const MegaSearch = () => {
                     {filteredData.unassigned.map((service) => (
                       <button
                         key={service._id}
-                        onClick={() => handleServiceClick(service._id)}
+                        onClick={() => handleServiceClick(service.slug || service._id)}
                         className="font-inter text-xs sm:text-sm text-charcoal-black bg-gray-50 hover:bg-gold-accent hover:text-white px-4 py-2 rounded-full border border-gray-100"
                       >
                         {service.title}

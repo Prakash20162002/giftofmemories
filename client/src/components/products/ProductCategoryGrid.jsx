@@ -70,7 +70,7 @@ const ProductCard = ({ product, index }) => {
   const handleClick = (e) => {
     e.preventDefault();
     if (!isUnavailable && product._id) {
-      navigate(`/shop/product/${product._id}`);
+      navigate(`/shop/product/${product.slug || product._id}`);
     }
   };
 

@@ -63,6 +63,11 @@ const ShopSchema = new mongoose.Schema(
       required: [true, "Product name is required"],
       trim: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
 
     description: {
       type: String,
