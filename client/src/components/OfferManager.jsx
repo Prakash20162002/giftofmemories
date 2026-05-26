@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Trash2, Plus, Image as ImageIcon } from "lucide-react";
+import { useConfirm } from "../context/ConfirmContext";
 
 const OfferManager = () => {
+  const confirm = useConfirm();
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -64,7 +66,7 @@ const OfferManager = () => {
   };
 
   const deleteOffer = async (id) => {
-    if (!confirm("Are you sure?")) return;
+    if (!(await confirm("Are you sure?"))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/offers/admin/delete/${id}`, { withCredentials: true });
       fetchOffers();

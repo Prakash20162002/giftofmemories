@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
+import { useConfirm } from '../context/ConfirmContext';
 
 const AdminLeads = () => {
+  const confirm = useConfirm();
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [campaignMessage, setCampaignMessage] = useState("Hello {name}! 👋\n\nWe have a special offer for you today...");
@@ -25,7 +27,7 @@ const AdminLeads = () => {
   }, []);
 
   const handleBroadcast = async () => {
-    if (!window.confirm("Are you sure you want to send this message to ALL pending leads?")) return;
+    if (!(await confirm("Are you sure you want to send this message to ALL pending leads?"))) return;
     
     setCampaignStatus("Starting campaign...");
     try {

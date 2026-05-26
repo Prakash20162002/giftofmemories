@@ -7,8 +7,10 @@ import BlogEditor from "../components/admin/BlogEditor";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminBlogPage = () => {
+  const confirm = useConfirm();
   const [blogs, setBlogs] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentBlog, setCurrentBlog] = useState(null);
@@ -48,7 +50,7 @@ const AdminBlogPage = () => {
   };
 
   const handleDeleteBlog = async (id) => {
-    if (window.confirm("Are you sure you want to permanently delete this journal entry?")) {
+    if (await confirm("Are you sure you want to permanently delete this journal entry?")) {
       try {
         await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/blogs/${id}`, {
           withCredentials: true // Ensure security cookie is sent for admin action

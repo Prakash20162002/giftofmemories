@@ -10,8 +10,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminGalleryPage = () => {
+  const confirm = useConfirm();
   const [galleryItems, setGalleryItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -181,7 +183,7 @@ const AdminGalleryPage = () => {
   const handleDelete = async (id, e) => {
     if (e && e.stopPropagation) e.stopPropagation();
     
-    if (!window.confirm("Remove this item from the gallery?")) return;
+    if (!(await confirm("Remove this item from the gallery?"))) return;
     try {
       await axios.delete(
         `${import.meta.env.VITE_NODE_URL}/api/gallery/delete-gallery/${id}`,

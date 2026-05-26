@@ -6,8 +6,10 @@ import { Upload, Edit, Trash2, Plus, Save, X, Image as ImageIcon } from "lucide-
 import Sidebar from "../components/admin/Sidebar";
 import TopBar from "../components/admin/TopBar";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminAboutPage = () => {
+  const confirm = useConfirm();
   const [aboutData, setAboutData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -176,7 +178,7 @@ const AdminAboutPage = () => {
   };
 
   const handleDeleteTeamMember = async (memberId) => {
-    if (!window.confirm("Are you sure you want to remove this creator from the team?")) {
+    if (!(await confirm("Are you sure you want to remove this creator from the team?"))) {
       return;
     }
 

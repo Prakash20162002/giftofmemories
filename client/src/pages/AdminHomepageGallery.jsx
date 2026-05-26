@@ -20,8 +20,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminHomepageGallery = () => {
+  const confirm = useConfirm();
   const [images, setImages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSection, setSelectedSection] = useState("parallax");
@@ -41,6 +43,7 @@ const AdminHomepageGallery = () => {
     alt: "",
     category: "",
     order: 0,
+    clientGalleryId: "",
   });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -85,8 +88,23 @@ const AdminHomepageGallery = () => {
     }
   };
 
+  const [clientGalleries, setClientGalleries] = useState([]);
+
+  const fetchClientGalleries = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_NODE_URL}/api/client-gallery/admin/get-all`,
+        { withCredentials: true }
+      );
+      setClientGalleries(response.data);
+    } catch (error) {
+      console.error("Error fetching client galleries:", error);
+    }
+  };
+
   useEffect(() => {
     fetchImages();
+    fetchClientGalleries();
   }, []);
 
   const filteredImages = images.filter(
@@ -138,6 +156,7 @@ const AdminHomepageGallery = () => {
       alt: "",
       category: "",
       order: filteredImages.length,
+      clientGalleryId: "",
     });
     setImageFile(null);
     setImagePreview(null);
@@ -151,6 +170,7 @@ const AdminHomepageGallery = () => {
       alt: image.alt || "",
       category: image.category || "",
       order: image.order || 0,
+      clientGalleryId: image.clientGalleryId || "",
     });
     setImagePreview(image.imageUrl);
     setImageFile(null);
@@ -167,6 +187,7 @@ const AdminHomepageGallery = () => {
       formDataToSend.append("alt", formData.alt);
       formDataToSend.append("category", formData.category);
       formDataToSend.append("order", formData.order);
+      formDataToSend.append("clientGalleryId", formData.clientGalleryId || "");
       if (imageFile) formDataToSend.append("image", imageFile);
 
       if (editingImage) {
@@ -227,7 +248,7 @@ const AdminHomepageGallery = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Permanently delete this image?")) return;
+    if (!(await confirm("Permanently delete this image?"))) return;
     try {
       await axios.delete(
         `${import.meta.env.VITE_NODE_URL}/api/homepage-gallery/admin/delete/${id}`,
@@ -506,16 +527,31 @@ const AdminHomepageGallery = () => {
                   </div>
 
                   {formData.section === "stacked" && (
-                    <div className="space-y-1.5 col-span-2">
-                      <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Card Category</label>
-                      <input
-                        type="text"
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        placeholder="e.g. Wedding, Pre-Wedding"
-                        className="w-full px-4 py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:ring-1 focus:ring-gold-accent outline-none"
-                      />
-                    </div>
+                    <>
+                      <div className="space-y-1.5 col-span-2">
+                        <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Card Category</label>
+                        <input
+                          type="text"
+                          value={formData.category}
+                          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                          placeholder="e.g. Wedding, Pre-Wedding"
+                          className="w-full px-4 py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:ring-1 focus:ring-gold-accent outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1.5 col-span-2">
+                        <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Linked Client Album (Optional)</label>
+                        <select
+                          value={formData.clientGalleryId}
+                          onChange={(e) => setFormData({ ...formData, clientGalleryId: e.target.value })}
+                          className="w-full px-4 py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:ring-1 focus:ring-gold-accent outline-none text-charcoal-black"
+                        >
+                          <option value="">None (Lightbox popup)</option>
+                          {clientGalleries.map((cg) => (
+                            <option key={cg._id} value={cg._id}>{cg.name} ({cg.category})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
                   )}
                 </div>
 

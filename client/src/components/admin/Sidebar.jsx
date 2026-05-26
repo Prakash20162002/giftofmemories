@@ -18,7 +18,8 @@ import {
   Package,
   LogOut,
   X,
-  Tag
+  Tag,
+  Images
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -86,6 +87,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         { icon: Settings, label: "Home Settings", path: "/admin-homepage-settings" },
         { icon: Image, label: "Page Heroes", path: "/admin-page-heroes" },
         { icon: Layers, label: "Home Gallery", path: "/admin-homepage-gallery" },
+        { icon: Images, label: "Client Galleries", path: "/admin-client-galleries" },
         { icon: Video, label: "Page Videos", path: "/admin-page-videos" },
         { icon: MessageSquare, label: "FAQs", path: "/admin-faqs" },
       ],

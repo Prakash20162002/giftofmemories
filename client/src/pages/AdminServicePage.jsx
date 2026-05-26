@@ -10,8 +10,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminServicePage = () => {
+  const confirm = useConfirm();
   const [services, setServices] = useState([]);
   const [packages, setPackages] = useState([]);
   const [expandedPackages, setExpandedPackages] = useState({});
@@ -160,7 +162,7 @@ const AdminServicePage = () => {
 
   const handleDeletePackage = async (id, e) => {
     if (e) e.stopPropagation();
-    if (!window.confirm("Delete this package? Associated services will remain but become unassigned.")) return;
+    if (!(await confirm("Delete this package? Associated services will remain but become unassigned."))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/services/packages/${id}`, { withCredentials: true });
       toast.success("Package deleted successfully");
@@ -289,7 +291,7 @@ const AdminServicePage = () => {
 
   const handleDeleteService = async (id, e) => {
     if (e && e.stopPropagation) e.stopPropagation();
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
+    if (!(await confirm("Are you sure you want to delete this service?"))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/services/delete-service/${id}`, { withCredentials: true });
       toast.success("Service deleted successfully");

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
+import compression from "compression";
 import path from "path";
 import helmet from "helmet"; // Security headers
 import { fileURLToPath } from "url";
@@ -24,6 +25,7 @@ import AboutRouter from "./Routes/About.js";
 import HomepageSettingsRouter from "./Routes/HomepageSettings.js";
 import PageHeroRouter from "./Routes/PageHero.js";
 import HomepageGalleryRouter from "./Routes/HomepageGallery.js";
+import ClientGalleryRouter from "./Routes/ClientGallery.js";
 import PageVideoRouter from "./Routes/PageVideo.js";
 import ProductCollectionRouter from "./Routes/ProductCollectionRouter.js";
 import FAQRouter from "./Routes/FAQ.js";
@@ -43,6 +45,60 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// --- GZIP COMPRESSION (Reduces JSON API response payload size) ---
+app.use(compression());
+
+// --- AUTOMATIC CLOUDINARY URL OPTIMIZATION MIDDLEWARE ---
+// Dynamically converts images to WebP/AVIF formats (f_auto) and applies visual lossless compression (q_auto)
+const optimizeCloudinaryUrl = (url) => {
+  if (typeof url !== "string" || !url.includes("res.cloudinary.com")) return url;
+  if (url.includes("/f_auto") || url.includes("/q_auto")) return url;
+  // If it's an image upload, restrict maximum width to 1200px (c_limit prevents scaling up)
+  if (url.includes("/image/upload/")) {
+    return url.replace("/upload/", "/upload/f_auto,q_auto,w_1200,c_limit/");
+  }
+  return url.replace("/upload/", "/upload/f_auto,q_auto/");
+};
+
+const optimizeObject = (obj) => {
+  if (obj === null || obj === undefined) return obj;
+  if (typeof obj === "string") {
+    return optimizeCloudinaryUrl(obj);
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(optimizeObject);
+  }
+  if (typeof obj === "object") {
+    if (obj instanceof Date || obj instanceof RegExp || Buffer.isBuffer(obj)) {
+      return obj;
+    }
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        obj[key] = optimizeObject(obj[key]);
+      }
+    }
+  }
+  return obj;
+};
+
+// --- GLOBAL RESPONSE METHOD OVERRIDE FOR CLOUDINARY OPTIMIZATION ---
+// Overrides the default express.response.json globally once at startup.
+// This avoids recursive method wrapping on every request that leads to RangeError stack overflows.
+const originalJson = express.response.json;
+express.response.json = function (body) {
+  try {
+    if (body) {
+      // Safely strip Mongoose documents' circular references using JSON serialization
+      const plainBody = JSON.parse(JSON.stringify(body));
+      const optimized = optimizeObject(plainBody);
+      return originalJson.call(this, optimized);
+    }
+  } catch (err) {
+    console.error("Cloudinary URL optimization failed:", err);
+  }
+  return originalJson.call(this, body);
+};
 
 // --- NEW: HTTP SERVER FOR WEBSOCKET SUPPORT ---
 // WebSockets require a raw HTTP server to attach to, rather than just the Express app
@@ -73,6 +129,8 @@ app.use(
       process.env.FRONT_END_URL,
       "http://localhost:5173",
       "http://localhost:5174",
+      "http://localhost:4173",
+      "http://localhost:4174",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -83,7 +141,14 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 
 // --- STATIC FILES ---
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Set Cache-Control headers for static uploads to improve client-side caching (Lighthouse Best Practice)
+app.use(
+  "/uploads",
+  express.static(path.join(__dirname, "uploads"), {
+    maxAge: "30d",
+    immutable: true,
+  })
+);
 
 // --- DATABASE CONNECTION ---
 await connectDB();
@@ -104,6 +169,7 @@ app.use("/api/about", AboutRouter);
 app.use("/api/homepage-settings", HomepageSettingsRouter);
 app.use("/api/page-hero", PageHeroRouter);
 app.use("/api/homepage-gallery", HomepageGalleryRouter);
+app.use("/api/client-gallery", ClientGalleryRouter);
 app.use("/api/page-videos", PageVideoRouter);
 app.use("/api/product-collections", ProductCollectionRouter);
 app.use("/api/faq", FAQRouter);

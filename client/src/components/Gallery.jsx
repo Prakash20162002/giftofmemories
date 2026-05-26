@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const defaultGalleryImages = [
@@ -9,6 +10,7 @@ const defaultGalleryImages = [
 ];
 
 const Gallery = () => {
+  const navigate = useNavigate();
   const [images, setImages] = useState(defaultGalleryImages);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -32,6 +34,7 @@ const Gallery = () => {
             src: img.imageUrl,
             alt: img.alt || img.altText || "Featured Couple",
             category: img.category || "Selected Works",
+            clientGalleryId: img.clientGalleryId || null,
           })));
         }
       } catch (e) { console.error("Gallery fetch failed", e); }
@@ -102,12 +105,21 @@ const Gallery = () => {
           transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
           className="absolute inset-0 w-full h-full z-0"
         >
-          <img
-            src={optimizeUrl(activeImage.src)}
-            alt={activeImage.alt}
-            className="w-full h-full object-cover object-top md:object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/80 via-transparent to-charcoal-black/90" />
+          <div 
+            onClick={() => {
+              if (activeImage.clientGalleryId) {
+                navigate(`/stories/${activeImage.clientGalleryId}`);
+              }
+            }}
+            className={`w-full h-full absolute inset-0 ${activeImage.clientGalleryId ? "cursor-pointer" : ""}`}
+          >
+            <img
+              src={optimizeUrl(activeImage.src)}
+              alt={activeImage.alt}
+              className="w-full h-full object-cover object-top md:object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-charcoal-black/80 via-transparent to-charcoal-black/90" />
+          </div>
         </motion.div>
       </AnimatePresence>
 

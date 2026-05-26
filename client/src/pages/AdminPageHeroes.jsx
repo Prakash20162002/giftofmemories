@@ -18,8 +18,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminPageHeroes = () => {
+  const confirm = useConfirm();
   const [heroes, setHeroes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -157,7 +159,7 @@ const AdminPageHeroes = () => {
   const handleReset = async () => {
     if (!selectedPage) return;
 
-    if (!window.confirm("Are you sure you want to revert this to the studio default?")) {
+    if (!(await confirm("Are you sure you want to revert this to the studio default?"))) {
       return;
     }
 

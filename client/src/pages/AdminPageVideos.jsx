@@ -20,8 +20,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminPageVideos = () => {
+  const confirm = useConfirm();
   const [videos, setVideos] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
@@ -195,7 +197,7 @@ const AdminPageVideos = () => {
 
   const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
-    if (!window.confirm("Permanently delete this video?")) return;
+    if (!(await confirm("Permanently delete this video?"))) return;
 
     try {
       await axios.delete(

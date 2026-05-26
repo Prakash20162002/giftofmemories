@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import { motion, AnimatePresence } from "framer-motion";
 import { MessageSquare, Quote, Edit2, Trash2, Save, X, Plus } from "lucide-react";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminTestimonial = () => {
+  const confirm = useConfirm();
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -103,7 +105,7 @@ const AdminTestimonial = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Permanently delete this testimonial?")) return;
+    if (!(await confirm("Permanently delete this testimonial?"))) return;
     try {
       await axios.delete(
         `${import.meta.env.VITE_NODE_URL}/api/testimonial/delete-testimonial/${id}`,

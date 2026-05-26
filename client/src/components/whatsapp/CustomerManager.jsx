@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Plus, Users, Phone, Mail, Edit2, Trash2, Search } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useConfirm } from "../../context/ConfirmContext";
 
 const CustomerManager = () => {
+  const confirm = useConfirm();
   const [customers, setCustomers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
@@ -60,7 +62,7 @@ const CustomerManager = () => {
   };
 
   const handleDelete = async (customerId) => {
-    if (!confirm("Are you sure you want to delete this customer?")) return;
+    if (!(await confirm("Are you sure you want to delete this customer?"))) return;
     
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/whatsapp-reminder/customers/${customerId}`, { withCredentials: true });

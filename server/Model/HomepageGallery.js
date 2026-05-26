@@ -27,6 +27,11 @@ const HomepageGallerySchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    clientGalleryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ClientGallery",
+      default: null,
+    },
   },
   { timestamps: true },
 );

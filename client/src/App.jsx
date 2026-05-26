@@ -60,12 +60,14 @@ import AdminReportsPage from "./pages/AdminReportsPage";
 import AdminHomepageSettings from "./pages/AdminHomepageSettings";
 import AdminPageHeroes from "./pages/AdminPageHeroes";
 import AdminHomepageGallery from "./pages/AdminHomepageGallery";
+import AdminClientGalleries from "./pages/AdminClientGalleries";
 import AdminPageVideos from "./pages/AdminPageVideos";
 import AdminProductCollections from "./pages/AdminProductCollections";
 import AdminFAQPage from "./pages/AdminFAQPage";
 import { ToastContainer } from "react-toastify";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ClientAuthProvider } from "./context/ClientAuthContext";
+import { ConfirmProvider } from "./context/ConfirmContext";
 import ClientLoginPage from "./pages/ClientLoginPage";
 import ClientSignupPage from "./pages/ClientSignupPage";
 
@@ -79,6 +81,7 @@ import AdminOffersPage from "./pages/AdminOffersPage";
 // --- NEW WHATSAPP CRM ENGINE ---
 import AdminWhatsAppReminders from "./pages/AdminWhatsAppReminders";
 import ProductDetailsPage from "./pages/ProductDetailedPage";
+import ClientGalleryPage from "./pages/ClientGalleryPage";
 
 // --- THEME DEFINITION ---
 const theme = createTheme({
@@ -143,7 +146,7 @@ const AppContent = () => {
     "/admin-enquiries", "/admin-testimonials", "/admin-services", "/admin-hero",
     "/admin-gallery", "/admin-shop", "/admin-users", "/admin-about",
     "/admin-reports", "/admin-homepage-settings", "/admin-page-heroes",
-    "/admin-homepage-gallery", "/admin-page-videos", "/admin-product-collections",
+    "/admin-homepage-gallery", "/admin-client-galleries", "/admin-page-videos", "/admin-product-collections",
     "/admin-faqs", "/admin-bookings", "/admin-offers", "/admin-leads",
     "/admin-whatsapp-reminders", 
   ];
@@ -186,6 +189,7 @@ const AppContent = () => {
           <Route path="/services" element={<ServicesPage />} />
           <Route path="/services/:id" element={<ServiceDetailsPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/stories/:id" element={<ClientGalleryPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/blog/:id" element={<BlogPostPage />} />
@@ -217,6 +221,7 @@ const AppContent = () => {
             <Route path="/admin-homepage-settings" element={<AdminHomepageSettings />} />
             <Route path="/admin-page-heroes" element={<AdminPageHeroes />} />
             <Route path="/admin-homepage-gallery" element={<AdminHomepageGallery />} />
+            <Route path="/admin-client-galleries" element={<AdminClientGalleries />} />
             <Route path="/admin-page-videos" element={<AdminPageVideos />} />
             <Route path="/admin-product-collections" element={<AdminProductCollections />} />
             <Route path="/admin-faqs" element={<AdminFAQPage />} />
@@ -242,9 +247,11 @@ function App() {
   return (
     <MantineProvider theme={theme}>
       <ClientAuthProvider>
-        <Router>
-          <AppContent />
-        </Router>
+        <ConfirmProvider>
+          <Router>
+            <AppContent />
+          </Router>
+        </ConfirmProvider>
       </ClientAuthProvider>
     </MantineProvider>
   );

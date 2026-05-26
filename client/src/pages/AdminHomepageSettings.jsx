@@ -25,8 +25,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminHomepageSettings = () => {
+  const confirm = useConfirm();
   const [settings, setSettings] = useState({
     showProducts: true,
     showServices: true,
@@ -174,7 +176,7 @@ const AdminHomepageSettings = () => {
   };
 
   const handleDeleteVideo = async (videoId) => {
-    if (!window.confirm("Remove this video from the homepage?")) return;
+    if (!(await confirm("Remove this video from the homepage?"))) return;
 
     try {
       setDeletingVideoId(videoId);

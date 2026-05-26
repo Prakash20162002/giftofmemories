@@ -10,8 +10,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminShopPage = () => {
+  const confirm = useConfirm();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -171,7 +173,7 @@ const handleMediaChange = (e) => {
 
   const handleDelete = async (id, e) => {
     if (e) e.stopPropagation();
-    if (!window.confirm("Are you sure you want to delete this product?")) return;
+    if (!(await confirm("Are you sure you want to delete this product?"))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/shop/delete-product/${id}`, { withCredentials: true });
       toast.success("Product deleted");
@@ -274,7 +276,7 @@ const handleMediaChange = (e) => {
 
   const handleDeleteCategory = async (id, e) => {
     if (e) e.stopPropagation();
-    if (!window.confirm("Delete category? Products in this category will be affected.")) return;
+    if (!(await confirm("Delete category? Products in this category will be affected."))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/product-categories/delete-category/${id}`, { withCredentials: true });
       toast.success("Category deleted");

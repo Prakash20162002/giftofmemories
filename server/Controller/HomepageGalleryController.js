@@ -36,7 +36,7 @@ export const getAllGalleryImages = async (req, res) => {
 // Add new image (admin)
 export const addGalleryImage = async (req, res) => {
   try {
-    const { section, alt, category, order } = req.body;
+    const { section, alt, category, order, clientGalleryId } = req.body;
 
     if (!["parallax", "scroll", "stacked"].includes(section)) {
       return res.status(400).json({ message: "Invalid section name" });
@@ -69,6 +69,7 @@ export const addGalleryImage = async (req, res) => {
       alt: alt || "Gallery Image",
       category: category || "",
       order: order || 0,
+      clientGalleryId: clientGalleryId || null,
     });
 
     await newImage.save();
@@ -86,7 +87,7 @@ export const addGalleryImage = async (req, res) => {
 export const updateGalleryImage = async (req, res) => {
   try {
     const { id } = req.params;
-    const { section, alt, category, order, isActive } = req.body;
+    const { section, alt, category, order, isActive, clientGalleryId } = req.body;
 
     const image = await HomepageGallery.findById(id);
     if (!image) {
@@ -101,6 +102,9 @@ export const updateGalleryImage = async (req, res) => {
     if (category !== undefined) image.category = category;
     if (order !== undefined) image.order = order;
     if (isActive !== undefined) image.isActive = isActive;
+    if (clientGalleryId !== undefined) {
+      image.clientGalleryId = clientGalleryId || null;
+    }
 
     // Handle new image upload
     if (req.file) {

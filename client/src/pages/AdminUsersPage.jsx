@@ -16,8 +16,10 @@ import { toast } from "react-toastify";
 import Sidebar from "../components/admin/Sidebar";
 import TopBar from "../components/admin/TopBar";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminUsersPage = () => {
+  const confirm = useConfirm();
   const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -44,7 +46,7 @@ const AdminUsersPage = () => {
   };
 
   const handleDelete = async (userId) => {
-    if (!window.confirm("Permanently delete this user account?")) return;
+    if (!(await confirm("Permanently delete this user account?"))) return;
     try {
       await axios.delete(
         `${import.meta.env.VITE_NODE_URL}/api/users/${userId}`,

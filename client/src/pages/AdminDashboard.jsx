@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
+import { useConfirm } from '../context/ConfirmContext';
 
 const AdminDashboard = () => {
+  const confirm = useConfirm();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -45,7 +47,7 @@ const AdminDashboard = () => {
   }, [API_URL]);
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this booking and all its reminders?')) {
+    if (await confirm('Are you sure you want to delete this booking and all its reminders?')) {
       try {
         await fetch(`${API_URL}/api/booking/bookings/${id}`, { method: 'DELETE' });
         setBookings(bookings.filter(b => b._id !== id)); 

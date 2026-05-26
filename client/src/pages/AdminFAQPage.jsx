@@ -6,8 +6,10 @@ import TopBar from "../components/admin/TopBar";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminFAQPage = () => {
+  const confirm = useConfirm();
   const [faqs, setFaqs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -43,7 +45,7 @@ const AdminFAQPage = () => {
   };
 
   const handleDelete = async (id, idx) => {
-    if (!window.confirm("Are you sure you want to delete this question?")) return;
+    if (!(await confirm("Are you sure you want to delete this question?"))) return;
 
     if (id) {
       try {

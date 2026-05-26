@@ -9,8 +9,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminOffersPage = () => {
+  const confirm = useConfirm();
   const [offers, setOffers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -105,7 +107,7 @@ const AdminOffersPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Delete this promotional offer?")) return;
+    if (!(await confirm("Delete this promotional offer?"))) return;
 
     try {
       await axios.delete(

@@ -9,8 +9,10 @@ import TopBar from "../components/admin/TopBar";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loader from "../components/Loader";
+import { useConfirm } from "../context/ConfirmContext";
 
 const AdminProductCollections = () => {
+  const confirm = useConfirm();
   const [collections, setCollections] = useState([]);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -128,7 +130,7 @@ const AdminProductCollections = () => {
 
   const handleDelete = async (id, e) => {
     if (e && e.stopPropagation) e.stopPropagation();
-    if (!window.confirm("Permanently delete this collection? Products will remain in your inventory.")) return;
+    if (!(await confirm("Permanently delete this collection? Products will remain in your inventory."))) return;
 
     try {
       await axios.delete(

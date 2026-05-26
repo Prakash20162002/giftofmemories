@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Bell, Calendar, Users, Plus, Trash2, Edit2, Image as ImageIcon } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useConfirm } from "../../context/ConfirmContext";
 
 const BookingReminderManager = () => {
+  const confirm = useConfirm();
   const [reminders, setReminders] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -169,7 +171,7 @@ const BookingReminderManager = () => {
   };
 
   const handleDelete = async (reminderId) => {
-    if (!confirm("Are you sure you want to cancel this booking reminder?")) return;
+    if (!(await confirm("Are you sure you want to cancel this booking reminder?"))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/whatsapp-reminder/booking-reminders/${reminderId}`, { withCredentials: true });
       toast.success("Booking reminder cancelled successfully");

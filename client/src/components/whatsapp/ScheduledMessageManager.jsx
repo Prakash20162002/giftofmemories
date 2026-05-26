@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Clock, Calendar, MessageSquare, Image as ImageIcon, Plus, Trash2, Edit2, Send, Search } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useConfirm } from "../../context/ConfirmContext";
 
 const ScheduledMessageManager = () => {
+  const confirm = useConfirm();
   const [messages, setMessages] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -130,7 +132,7 @@ const ScheduledMessageManager = () => {
   };
 
   const handleDelete = async (messageId) => {
-    if (!confirm("Are you sure you want to cancel this scheduled message?")) return;
+    if (!(await confirm("Are you sure you want to cancel this scheduled message?"))) return;
     try {
       await axios.delete(`${import.meta.env.VITE_NODE_URL}/api/whatsapp-reminder/scheduled-messages/${messageId}`, { withCredentials: true });
       toast.success("Message cancelled successfully");
