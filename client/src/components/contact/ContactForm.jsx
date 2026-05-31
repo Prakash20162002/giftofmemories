@@ -177,7 +177,7 @@ const ContactForm = () => {
               <input
                 type="tel"
                 name="phone"
-                placeholder="+91 98765 43210"
+                placeholder="+91 83359 34679"
                 value={form.phone}
                 onChange={handleChange}
                 className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30"

@@ -54,10 +54,10 @@ const HomeCTA = () => {
                 </h3>
                 {/* Clickable Phone Link */}
                 <a 
-                  href="tel:+919876543210" 
+                  href="tel:+918335934679" 
                   className="hover:text-gold-accent transition-colors duration-200"
                 >
-                  +91 98765 43210
+                  +91 83359 34679
                 </a>
               </div>
             </div>

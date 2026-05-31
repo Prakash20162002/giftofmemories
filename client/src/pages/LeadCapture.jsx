@@ -69,7 +69,7 @@ const LeadCapture = () => {
                 <option value="+44">+44 (UK)</option>
                 <option value="+61">+61 (AU)</option>
               </select>
-              <input type="text" name="phone" value={formData.phone} onChange={handleChange} required pattern="\d{6,15}" title="Digits only, 6 to 15 characters" className="flex-1 bg-[#1c1c21] border border-[#2a2a30] text-warm-ivory rounded-lg px-4 py-3 focus:outline-none focus:border-gold-accent transition-colors" placeholder="9876543210" />
+              <input type="text" name="phone" value={formData.phone} onChange={handleChange} required pattern="\d{6,15}" title="Digits only, 6 to 15 characters" className="flex-1 bg-[#1c1c21] border border-[#2a2a30] text-warm-ivory rounded-lg px-4 py-3 focus:outline-none focus:border-gold-accent transition-colors" placeholder="8335934679" />
             </div>
           </div>
 

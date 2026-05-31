@@ -140,7 +140,7 @@ const ClientSignupPage = () => {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 className="w-full px-5 py-4 rounded-xl border border-charcoal-black/10 focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent bg-warm-ivory/30 text-charcoal-black transition-all placeholder:text-slate-gray/50"
-                placeholder="+91 98765 43210"
+                placeholder="+91 83359 34679"
               />
             </div>
 
