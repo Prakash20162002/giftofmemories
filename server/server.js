@@ -127,6 +127,7 @@ app.use(
   cors({
     origin: [
       process.env.FRONT_END_URL,
+      "https://www.giftofmemories.in", 
       "http://localhost:5173",
       "http://localhost:5174",
       "http://localhost:4173",
