@@ -10,11 +10,104 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap"
       rel="stylesheet"
     />
-    <meta name="description" content="Gift of Memories - Premium wedding photography and cinematography in Kolkata. Capturing your legacy through candid and cinematic storytelling. Discover our bespoke wedding ritual collections." />
-    <title>Gift of Memories</title>
+    
+    <!-- Primary SEO Metadata -->
+    <meta name="description" content="Gift of Memories is Kolkata's premier wedding photography and cinematography studio. Capturing your legacy through luxury candid and cinematic storytelling." />
+    <title>Gift of Memories | Best Wedding Photographer in Kolkata</title>
+    
+    <!-- Canonical Tag -->
+    <link rel="canonical" href="https://giftofmemories.in" />
+
+    <!-- OpenGraph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://giftofmemories.in" />
+    <meta property="og:title" content="Gift of Memories | Best Wedding Photographer in Kolkata" />
+    <meta property="og:description" content="Gift of Memories is Kolkata's premier wedding photography and cinematography studio. Capturing your legacy through luxury candid and cinematic storytelling." />
+    <meta property="og:image" content="https://giftofmemories.in/src/assets/images/logo-negative-gom.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://giftofmemories.in" />
+    <meta name="twitter:title" content="Gift of Memories | Best Wedding Photographer in Kolkata" />
+    <meta name="twitter:description" content="Gift of Memories is Kolkata's premier wedding photography and cinematography studio. Capturing your legacy through luxury candid and cinematic storytelling." />
+    <meta name="twitter:image" content="https://giftofmemories.in/src/assets/images/logo-negative-gom.png" />
+
+    <!-- Schema.org JSON-LD Structured Data for Local Business & Photographer -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Gift of Memories",
+        "image": "https://giftofmemories.in/src/assets/images/logo-negative-gom.png",
+        "@id": "https://giftofmemories.in",
+        "url": "https://giftofmemories.in",
+        "telephone": "+918335934679",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Sukanta pally Rabindra Nagar, Dum Dum Cantonment",
+          "addressLocality": "Kolkata",
+          "addressRegion": "West Bengal",
+          "postalCode": "700065",
+          "addressCountry": "IN"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 22.645065,
+          "longitude": 88.406856
+        },
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "10:00",
+            "closes": "19:00"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Saturday",
+            "opens": "11:00",
+            "closes": "17:00"
+          }
+        ],
+        "sameAs": [
+          "https://www.facebook.com/thegiftofmemoriesofficial",
+          "https://www.instagram.com/gift_of_memories_wedding"
+        ]
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <!-- Fallback HTML content for static crawlers. React replaces this dynamic content upon page initialization. -->
+    <div id="root">
+      <header>
+        <img src="/src/assets/images/logo-negative-gom.png" alt="Gift of Memories Logo" />
+        <h1>Gift of Memories | Best Wedding Photographer in Kolkata</h1>
+        <p>Kolkata's premier photography and cinematography studio. We capture authentic Bengali wedding rituals, luxury events, candid stories, and professional portraits.</p>
+        <nav>
+          <ul>
+            <li><a href="/gallery">Gallery & Portfolio</a></li>
+            <li><a href="/services">Photography Services</a></li>
+            <li><a href="/shop">Wedding Samogri Store</a></li>
+            <li><a href="/about">About Rig Biswas</a></li>
+            <li><a href="/contact">Book a Session</a></li>
+            <li><a href="/blog">Our Journal & Stories</a></li>
+          </ul>
+        </nav>
+      </header>
+      <main>
+        <h2>Premium Wedding Photography & Cinematography Services in Kolkata</h2>
+        <p>Our studio specializes in capturing luxury wedding ceremonies and creating cinematic wedding films. Explore our bespoke services and custom pricing options.</p>
+      </main>
+      <footer>
+        <p>&copy; Gift of Memories. Sukanta pally Rabindra Nagar, Dum Dum Cantonment, Kolkata, West Bengal 700065. Phone: +91 83359 34679</p>
+      </footer>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
