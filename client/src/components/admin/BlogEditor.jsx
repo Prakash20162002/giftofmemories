@@ -55,7 +55,7 @@ const BlogEditor = ({ blog, onSave, onCancel }) => {
     // ✅ Upload images to Cloudinary instead of embedding as Base64.
     // This keeps blog HTML content small regardless of how many images are added.
     imageUploadUrl: `${import.meta.env.VITE_NODE_URL}/api/blogs/upload-image`,
-    imageUploadSizeLimit: 15 * 1024 * 1024, // 15MB per image
+    imageUploadSizeLimit: 100 * 1024 * 1024, // 100MB per image
     imageAccept: ".jpg,.jpeg,.png,.gif,.webp",
     imageUploadHeader: { credentials: "include" }, // send auth cookie
     buttonList: [

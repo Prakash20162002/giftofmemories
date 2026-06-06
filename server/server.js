@@ -119,7 +119,7 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "100mb" }));
 app.use(cookieParser());
 
 // --- CORS CONFIGURATION ---
@@ -139,7 +139,7 @@ app.use(
   }),
 );
 
-app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 // --- STATIC FILES ---
 // Set Cache-Control headers for static uploads to improve client-side caching (Lighthouse Best Practice)
