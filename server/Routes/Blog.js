@@ -1,5 +1,7 @@
 import express from "express";
 import multer from "multer";
+import cloudinary from "../config/cloudinary.js";
+import streamifier from "streamifier";
 import {
   getBlogs,
   getBlogById,
@@ -21,13 +23,56 @@ const fileFilter = (req, file, cb) => {
     cb(new Error("Only image files are allowed!"), false);
   }
 };
+
 const upload = multer({
   storage: storage,
-  limits: { 
-    fileSize: 10 * 1024 * 1024, // 10MB file upload limit
-    fieldSize: 50 * 1024 * 1024 // 50MB field value size limit for base64/HTML content
+  limits: {
+    fileSize: 15 * 1024 * 1024, // 15MB per file
+    fieldSize: 50 * 1024 * 1024, // 50MB field value size limit for HTML content
   },
   fileFilter: fileFilter,
+});
+
+// --- SUNEDITOR INLINE IMAGE UPLOAD ---
+// SunEditor POSTs images here with field name "file".
+// Must return: { result: [{ url, name, size }] }
+router.post("/upload-image", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ errorMessage: "No image file received." });
+    }
+
+    const uploadPromise = new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          folder: "blogs/inline",
+          resource_type: "image",
+          transformation: [{ quality: "auto", fetch_format: "auto" }],
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+    });
+
+    const result = await uploadPromise;
+
+    // SunEditor expects this exact response shape
+    return res.status(200).json({
+      result: [
+        {
+          url: result.secure_url,
+          name: req.file.originalname,
+          size: req.file.size,
+        },
+      ],
+    });
+  } catch (error) {
+    console.error("Blog inline image upload failed:", error);
+    return res.status(500).json({ errorMessage: error.message });
+  }
 });
 
 router.get("/", getBlogs);
