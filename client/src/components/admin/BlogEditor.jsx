@@ -57,7 +57,7 @@ const BlogEditor = ({ blog, onSave, onCancel }) => {
     imageUploadUrl: `${import.meta.env.VITE_NODE_URL}/api/blogs/upload-image`,
     imageUploadSizeLimit: 100 * 1024 * 1024, // 100MB per image
     imageAccept: ".jpg,.jpeg,.png,.gif,.webp",
-    imageUploadHeader: { credentials: "include" }, // send auth cookie
+    imageUploadWithCredentials: true, // correctly sets XHR withCredentials flag
     buttonList: [
       ["undo", "redo"],
       ["font", "fontSize", "formatBlock"],
