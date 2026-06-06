@@ -36,43 +36,59 @@ const upload = multer({
 // --- SUNEDITOR INLINE IMAGE UPLOAD ---
 // SunEditor POSTs images here with field name "file".
 // Must return: { result: [{ url, name, size }] }
-router.post("/upload-image", upload.single("file"), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ errorMessage: "No image file received." });
+//
+// NOTE: multer is called manually (not as middleware) so that multer errors
+// (file too large, wrong type, etc.) are caught and returned as JSON —
+// not as Express's default HTML error page which SunEditor cannot parse.
+router.post("/upload-image", (req, res) => {
+  const multerSingle = upload.single("file");
+
+  multerSingle(req, res, async (multerErr) => {
+    // Multer errors (file too large, wrong type, etc.)
+    if (multerErr) {
+      console.error("Multer error on image upload:", multerErr);
+      return res.status(400).json({
+        errorMessage: multerErr.message || "File upload error.",
+      });
     }
 
-    const uploadPromise = new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: "blogs/inline",
-          resource_type: "image",
-          transformation: [{ quality: "auto", fetch_format: "auto" }],
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        }
-      );
-      streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
-    });
+    try {
+      if (!req.file) {
+        return res.status(400).json({ errorMessage: "No image file received." });
+      }
 
-    const result = await uploadPromise;
+      const uploadPromise = new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          {
+            folder: "blogs/inline",
+            resource_type: "image",
+            transformation: [{ quality: "auto", fetch_format: "auto" }],
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+      });
 
-    // SunEditor expects this exact response shape
-    return res.status(200).json({
-      result: [
-        {
-          url: result.secure_url,
-          name: req.file.originalname,
-          size: req.file.size,
-        },
-      ],
-    });
-  } catch (error) {
-    console.error("Blog inline image upload failed:", error);
-    return res.status(500).json({ errorMessage: error.message });
-  }
+      const result = await uploadPromise;
+
+      // SunEditor expects this exact response shape
+      return res.status(200).json({
+        result: [
+          {
+            url: result.secure_url,
+            name: req.file.originalname,
+            size: req.file.size,
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Blog inline image upload failed:", error);
+      return res.status(500).json({ errorMessage: error.message });
+    }
+  });
 });
 
 router.get("/", getBlogs);
