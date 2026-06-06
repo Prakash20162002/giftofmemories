@@ -41,9 +41,9 @@ const upload = multer({
 // (file too large, wrong type, etc.) are caught and returned as JSON —
 // not as Express's default HTML error page which SunEditor cannot parse.
 router.post("/upload-image", (req, res) => {
-  const multerSingle = upload.single("file");
+  const multerAny = upload.any(); // accept whatever field name SunEditor sends
 
-  multerSingle(req, res, async (multerErr) => {
+  multerAny(req, res, async (multerErr) => {
     // Multer errors (file too large, wrong type, etc.)
     if (multerErr) {
       console.error("Multer error on image upload:", multerErr);
@@ -53,7 +53,9 @@ router.post("/upload-image", (req, res) => {
     }
 
     try {
-      if (!req.file) {
+      // req.files is an array when using upload.any()
+      const file = req.files && req.files[0];
+      if (!file) {
         return res.status(400).json({ errorMessage: "No image file received." });
       }
 
@@ -69,7 +71,7 @@ router.post("/upload-image", (req, res) => {
             else resolve(result);
           }
         );
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        streamifier.createReadStream(file.buffer).pipe(uploadStream);
       });
 
       const result = await uploadPromise;
@@ -79,8 +81,8 @@ router.post("/upload-image", (req, res) => {
         result: [
           {
             url: result.secure_url,
-            name: req.file.originalname,
-            size: req.file.size,
+            name: file.originalname,
+            size: file.size,
           },
         ],
       });
