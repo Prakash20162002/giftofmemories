@@ -2,6 +2,7 @@ import express from "express";
 import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import compressImage from "../utils/compressImage.js";
 import {
   getBlogs,
   getBlogById,
@@ -33,6 +34,7 @@ const upload = multer({
   fileFilter: fileFilter,
 });
 
+
 // --- SUNEDITOR INLINE IMAGE UPLOAD ---
 // SunEditor POSTs images here with field name "file".
 // Must return: { result: [{ url, name, size }] }
@@ -59,6 +61,9 @@ router.post("/upload-image", (req, res) => {
         return res.status(400).json({ errorMessage: "No image file received." });
       }
 
+      // Compress if over Cloudinary free plan limit (10MB)
+      const uploadBuffer = await compressImage(file.buffer);
+
       const uploadPromise = new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           {
@@ -71,7 +76,7 @@ router.post("/upload-image", (req, res) => {
             else resolve(result);
           }
         );
-        streamifier.createReadStream(file.buffer).pipe(uploadStream);
+        streamifier.createReadStream(uploadBuffer).pipe(uploadStream);
       });
 
       const result = await uploadPromise;

@@ -1,6 +1,7 @@
 import Blog from "../Model/Blog.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
+import compressImage from "../utils/compressImage.js";
 
 // Get all blogs
 export const getBlogs = async (req, res) => {
@@ -33,6 +34,7 @@ export const createBlog = async (req, res) => {
     let imageUrl = manualImage || "https://via.placeholder.com/800x400"; 
 
     if (req.file) {
+      const uploadBuffer = await compressImage(req.file.buffer);
       const uploadPromise = new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           { folder: "blogs", resource_type: "image" },
@@ -41,7 +43,7 @@ export const createBlog = async (req, res) => {
             else resolve(result);
           }
         );
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        streamifier.createReadStream(uploadBuffer).pipe(uploadStream);
       });
       const result = await uploadPromise;
       imageUrl = result.secure_url;
@@ -92,6 +94,7 @@ export const updateBlog = async (req, res) => {
     let imageUrl = manualImage || blog.image;
 
     if (req.file) {
+      const uploadBuffer = await compressImage(req.file.buffer);
       const uploadPromise = new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
           { folder: "blogs", resource_type: "image" },
@@ -100,7 +103,7 @@ export const updateBlog = async (req, res) => {
             else resolve(result);
           }
         );
-        streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        streamifier.createReadStream(uploadBuffer).pipe(uploadStream);
       });
       const result = await uploadPromise;
 

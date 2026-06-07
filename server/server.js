@@ -119,15 +119,15 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false,
 }));
 
-app.use(express.json({ limit: "100mb" }));
-app.use(cookieParser());
-
 // --- CORS CONFIGURATION ---
+// MUST be before express.json() so preflight OPTIONS requests get
+// Access-Control-Allow-Origin headers before any body parsing occurs.
 app.use(
   cors({
     origin: [
-      process.env.FRONT_END_URL,
-      "https://www.giftofmemories.in", 
+      "https://giftofmemories.in",      // production (no www)
+      "https://www.giftofmemories.in",   // production (with www)
+      process.env.FRONT_END_URL,         // from .env
       "http://localhost:5173",
       "http://localhost:5174",
       "http://localhost:4173",
@@ -139,6 +139,8 @@ app.use(
   }),
 );
 
+app.use(express.json({ limit: "100mb" }));
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: true, limit: "100mb" }));
 
 // --- STATIC FILES ---
