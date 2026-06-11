@@ -21,6 +21,14 @@ const ServiceSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Package",
   },
+  youtubeUrl: {
+    type: String,
+    default: "",
+  },
+  showVideoAsFloating: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export const Service = mongoose.model("Service", ServiceSchema);

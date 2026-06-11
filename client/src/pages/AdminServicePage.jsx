@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Edit2, Trash2, Search, ChevronDown, ChevronUp, X,
   Image as ImageIcon, Package as PackageIcon, Save, Layers,
-  Eye, EyeOff, LayoutGrid, Rows, Star, Upload
+  Eye, EyeOff, LayoutGrid, Rows, Star, Upload, Video
 } from "lucide-react";
 import Sidebar from "../components/admin/Sidebar";
 import TopBar from "../components/admin/TopBar";
@@ -36,6 +36,7 @@ const AdminServicePage = () => {
   const [serviceForm, setServiceForm] = useState({
     title: "", category: "Weddings", shortDescription: "", description: "",
     price: "", duration: "", deliverables: "", location: "", packageId: "",
+    youtubeUrl: "", showVideoAsFloating: false,
   });
 
   const [imageFile, setImageFile] = useState(null);
@@ -185,6 +186,7 @@ const AdminServicePage = () => {
     setServiceForm({
       title: "", category: "Weddings", shortDescription: "", description: "",
       price: "", duration: "", deliverables: "", location: "", packageId: safePackageId,
+      youtubeUrl: "", showVideoAsFloating: false,
     });
     setImageFile(null); setImagePreview(null);
     setLogoFile(null); setLogoPreview(null);
@@ -208,6 +210,8 @@ const AdminServicePage = () => {
       deliverables: service.details?.deliverables || "", 
       location: service.details?.location || "", 
       packageId: service.package || "",
+      youtubeUrl: service.youtubeUrl || "",
+      showVideoAsFloating: service.showVideoAsFloating || false,
     });
     
     setImagePreview(service.images && service.images.length > 0 ? service.images[0] : null);
@@ -264,6 +268,8 @@ const AdminServicePage = () => {
       };
       data.append("details", JSON.stringify(details));
       data.append("packageId", serviceForm.packageId || "");
+      data.append("youtubeUrl", serviceForm.youtubeUrl || "");
+      data.append("showVideoAsFloating", serviceForm.showVideoAsFloating);
 
       if (imageFile) data.append("images", imageFile);
       if (logoFile) data.append("logo", logoFile);
@@ -740,6 +746,42 @@ const AdminServicePage = () => {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal-black ml-1">Location</label>
                     <input type="text" name="location" value={serviceForm.location} onChange={handleServiceInputChange} placeholder="Studio/On-site" className="w-full px-4 py-3 bg-white border border-charcoal-black/10 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-accent transition-all text-charcoal-black" />
+                  </div>
+                </div>
+
+                {/* YouTube Video Section */}
+                <div className="bg-charcoal-black p-6 rounded-2xl border border-white/5 space-y-6 text-white">
+                  <h4 className="font-playfair font-bold text-lg text-warm-ivory flex items-center gap-2">
+                    <Video size={18} className="text-gold-accent" />
+                    Cinematic Showcase Video (Optional)
+                  </h4>
+                  
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold uppercase tracking-widest text-warm-ivory/60 ml-1">YouTube Video URL</label>
+                    <input 
+                      type="text" 
+                      name="youtubeUrl" 
+                      value={serviceForm.youtubeUrl} 
+                      onChange={handleServiceInputChange} 
+                      placeholder="e.g. https://www.youtube.com/watch?v=..." 
+                      className="w-full px-5 py-3.5 bg-white/5 border border-white/10 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-accent transition-all text-warm-ivory" 
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-white/5 border border-white/10 rounded-xl">
+                    <div>
+                      <h5 className="text-sm font-bold text-warm-ivory">Show in Side Popup</h5>
+                      <p className="text-[10px] uppercase tracking-widest text-warm-ivory/50 mt-1">
+                        ON: Floating widget (like shop). OFF: Embedded in page.
+                      </p>
+                    </div>
+                    <button 
+                      type="button" 
+                      onClick={() => setServiceForm(prev => ({ ...prev, showVideoAsFloating: !prev.showVideoAsFloating }))} 
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${serviceForm.showVideoAsFloating ? "bg-gold-accent" : "bg-white/10"}`}
+                    >
+                      <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${serviceForm.showVideoAsFloating ? "translate-x-6" : "translate-x-1"}`} />
+                    </button>
                   </div>
                 </div>
               </form>

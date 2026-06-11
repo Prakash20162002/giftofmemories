@@ -169,6 +169,9 @@ const BlogEditor = ({ blog, onSave, onCancel }) => {
                   <p className="text-[10px] font-bold text-slate-gray uppercase">
                     Upload Journal Cover
                   </p>
+                  <p className="text-[8px] font-bold text-slate-gray/50 uppercase tracking-widest mt-1">
+                    Rec. Ratio: 16:9 (Landscape)
+                  </p>
                 </div>
               )}
 

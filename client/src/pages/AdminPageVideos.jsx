@@ -43,19 +43,19 @@ const AdminPageVideos = () => {
   const [uploadDescription, setUploadDescription] = useState("");
   const [uploadPageType, setUploadPageType] = useState("services");
   const [uploadPreview, setUploadPreview] = useState(null);
+  const [uploadShowAsFloating, setUploadShowAsFloating] = useState(false);
 
   // YouTube State
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [youtubeTitle, setYoutubeTitle] = useState("");
   const [youtubeDescription, setYoutubeDescription] = useState("");
   const [youtubePageType, setYoutubePageType] = useState("services");
+  const [youtubeShowAsFloating, setYoutubeShowAsFloating] = useState(false);
 
   const pageTypes = [
     { value: "services", label: "Services Page", description: "How to use our services" },
     { value: "shop", label: "Shop Page", description: "How to buy products" },
     { value: "booking", label: "Booking Page", description: "How to book services" },
-    { value: "service-details", label: "Service Details", description: "Service tutorials" },
-    { value: "product-details", label: "Product Details", description: "Product guides" },
   ];
 
   const fetchVideos = async () => {
@@ -103,6 +103,7 @@ const AdminPageVideos = () => {
       formData.append("title", uploadTitle);
       formData.append("description", uploadDescription);
       formData.append("pageType", uploadPageType);
+      formData.append("showAsFloating", uploadShowAsFloating);
 
       await axios.post(
         `${import.meta.env.VITE_NODE_URL}/api/page-videos/add`,
@@ -137,6 +138,7 @@ const AdminPageVideos = () => {
           title: youtubeTitle,
           description: youtubeDescription,
           pageType: youtubePageType,
+          showAsFloating: youtubeShowAsFloating,
         },
         { withCredentials: true }
       );
@@ -163,6 +165,7 @@ const AdminPageVideos = () => {
           title: editingVideo.title,
           description: editingVideo.description,
           pageType: editingVideo.pageType,
+          showAsFloating: editingVideo.showAsFloating,
         },
         { withCredentials: true }
       );
@@ -218,6 +221,7 @@ const AdminPageVideos = () => {
     setUploadDescription("");
     setUploadPageType("services");
     setUploadPreview(null);
+    setUploadShowAsFloating(false);
   };
 
   const resetYoutubeModal = () => {
@@ -226,6 +230,7 @@ const AdminPageVideos = () => {
     setYoutubeTitle("");
     setYoutubeDescription("");
     setYoutubePageType("services");
+    setYoutubeShowAsFloating(false);
   };
 
   const filteredVideos = activeFilter === "all" ? videos : videos.filter((v) => v.pageType === activeFilter);
@@ -463,6 +468,22 @@ const AdminPageVideos = () => {
                   <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Description (Optional)</label>
                   <textarea value={uploadDescription} onChange={(e) => setUploadDescription(e.target.value)} placeholder="Provide context..." rows={3} className="w-full px-5 py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-accent transition-all resize-none text-charcoal-black" />
                 </div>
+
+                <div className="flex items-center justify-between p-4 bg-warm-ivory/30 border border-charcoal-black/10 rounded-2xl">
+                  <div>
+                    <h4 className="text-sm font-bold text-charcoal-black">Show in Side Popup</h4>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-gray mt-1">
+                      ON: Floating widget (like shop). OFF: Embedded in page.
+                    </p>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setUploadShowAsFloating(!uploadShowAsFloating)} 
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border-0 ${uploadShowAsFloating ? "bg-gold-accent" : "bg-charcoal-black/20"}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${uploadShowAsFloating ? "translate-x-6" : "translate-x-1"}`} />
+                  </button>
+                </div>
               </form>
 
               <div className="p-6 md:p-8 border-t border-charcoal-black/5 bg-white shrink-0 flex gap-3">
@@ -514,6 +535,22 @@ const AdminPageVideos = () => {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Description (Optional)</label>
                   <textarea value={youtubeDescription} onChange={(e) => setYoutubeDescription(e.target.value)} placeholder="Briefly describe the cinematic..." rows={3} className="w-full px-5 py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-accent transition-all resize-none text-charcoal-black" />
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-warm-ivory/30 border border-charcoal-black/10 rounded-2xl">
+                  <div>
+                    <h4 className="text-sm font-bold text-charcoal-black">Show in Side Popup</h4>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-gray mt-1">
+                      ON: Floating widget (like shop). OFF: Embedded in page.
+                    </p>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setYoutubeShowAsFloating(!youtubeShowAsFloating)} 
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border-0 ${youtubeShowAsFloating ? "bg-gold-accent" : "bg-charcoal-black/20"}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${youtubeShowAsFloating ? "translate-x-6" : "translate-x-1"}`} />
+                  </button>
                 </div>
               </form>
 
@@ -570,6 +607,22 @@ const AdminPageVideos = () => {
                 <div className="space-y-2">
                   <label className="text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">Description</label>
                   <textarea value={editingVideo.description || ""} onChange={(e) => setEditingVideo({ ...editingVideo, description: e.target.value })} rows={3} className="w-full px-5 py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl text-sm focus:outline-none focus:ring-1 focus:ring-gold-accent transition-all resize-none text-charcoal-black" />
+                </div>
+
+                <div className="flex items-center justify-between p-4 bg-warm-ivory/30 border border-charcoal-black/10 rounded-2xl">
+                  <div>
+                    <h4 className="text-sm font-bold text-charcoal-black">Show in Side Popup</h4>
+                    <p className="text-[10px] uppercase tracking-widest text-slate-gray mt-1">
+                      ON: Floating widget (like shop). OFF: Embedded in page.
+                    </p>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setEditingVideo({ ...editingVideo, showAsFloating: !editingVideo.showAsFloating })} 
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer border-0 ${editingVideo.showAsFloating ? "bg-gold-accent" : "bg-charcoal-black/20"}`}
+                  >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${editingVideo.showAsFloating ? "translate-x-6" : "translate-x-1"}`} />
+                  </button>
                 </div>
               </form>
 

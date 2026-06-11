@@ -37,7 +37,7 @@ export const addVideo = async (req, res) => {
       return res.status(400).json({ message: "Video file is required" });
     }
 
-    const { title, description, pageType, order } = req.body;
+    const { title, description, pageType, order, showAsFloating } = req.body;
 
     if (!title || !pageType) {
       return res
@@ -70,6 +70,7 @@ export const addVideo = async (req, res) => {
       videoType: "upload",
       pageType,
       order: order ? parseInt(order) : 0,
+      showAsFloating: showAsFloating === "true" || showAsFloating === true,
     });
 
     await newVideo.save();
@@ -85,7 +86,7 @@ export const addVideo = async (req, res) => {
 // Add YouTube video
 export const addYoutubeVideo = async (req, res) => {
   try {
-    const { title, description, youtubeUrl, pageType, order } = req.body;
+    const { title, description, youtubeUrl, pageType, order, showAsFloating } = req.body;
 
     if (!title || !youtubeUrl || !pageType) {
       return res
@@ -116,6 +117,7 @@ export const addYoutubeVideo = async (req, res) => {
       youtubeId,
       pageType,
       order: order ? parseInt(order) : 0,
+      showAsFloating: showAsFloating === "true" || showAsFloating === true,
     });
 
     await newVideo.save();
@@ -132,7 +134,7 @@ export const addYoutubeVideo = async (req, res) => {
 export const updateVideo = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, pageType, isActive, order } = req.body;
+    const { title, description, pageType, isActive, order, showAsFloating } = req.body;
 
     const video = await PageVideo.findById(id);
     if (!video) {
@@ -145,6 +147,9 @@ export const updateVideo = async (req, res) => {
     if (pageType) video.pageType = pageType;
     if (isActive !== undefined) video.isActive = isActive;
     if (order !== undefined) video.order = parseInt(order);
+    if (showAsFloating !== undefined) {
+      video.showAsFloating = showAsFloating === "true" || showAsFloating === true;
+    }
 
     // If a new video file is uploaded
     if (req.file) {

@@ -55,7 +55,7 @@ const ProductDetailsPage = () => {
 
   const handleWhatsAppOrder = () => {
     const msg = `Hello Gift of Memories! I want to order ${product.name} (₹${product.price}).\nLink: ${window.location.href}`;
-    window.open(`https://wa.me/918335934679?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/917003006612?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
   return (
@@ -87,7 +87,7 @@ const ProductDetailsPage = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.4 }}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain bg-[#FAF9F6]/40 p-2"
                 />
               </AnimatePresence>
               
@@ -109,7 +109,7 @@ const ProductDetailsPage = () => {
                       selectedMedia === file ? "border-gold-accent scale-95 shadow-md" : "border-transparent opacity-50 hover:opacity-100"
                     }`}
                   >
-                    <img src={file} className="w-full h-full object-cover" alt="Gallery preview" />
+                    <img src={file} className="w-full h-full object-contain bg-[#FAF9F6]/40 p-1" alt="Gallery preview" />
                   </button>
                 ))}
               </div>

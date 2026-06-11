@@ -100,32 +100,32 @@ const ContactForm = () => {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      // FIX: Fluid padding (px-5 py-10 on mobile, p-12 on desktop)
-      className="bg-white px-5 py-10 md:p-12 rounded-[2rem] shadow-2xl border border-charcoal-black/5 relative overflow-hidden"
+      // Fluid padding: Reduced to make it compact
+      className="bg-white px-5 py-6 md:p-8 rounded-[2rem] shadow-2xl border border-charcoal-black/5 relative overflow-hidden"
     >
       {/* Decorative Blur - Scaled down for mobile */}
       <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-gold-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
 
       <div className="relative z-10">
         {/* Header Section: Centered on mobile for better balance */}
-        <div className="text-center md:text-left mb-8 md:mb-10">
-          <span className="text-gold-accent font-bold text-[9px] md:text-xs tracking-[0.3em] uppercase mb-2 block">
+        <div className="text-center md:text-left mb-4 md:mb-6">
+          <span className="text-gold-accent font-bold text-[9px] md:text-xs tracking-[0.3em] uppercase mb-1 block">
             Get In Touch
           </span>
-          <h2 className="font-playfair text-3xl md:text-5xl font-bold text-charcoal-black mb-3">
+          <h2 className="font-playfair text-2xl md:text-3xl font-bold text-charcoal-black mb-2">
             Send us a <span className="italic text-gold-accent">Message</span>
           </h2>
-          <p className="font-inter text-slate-gray text-xs md:text-base max-w-md mx-auto md:mx-0 leading-relaxed">
+          <p className="font-inter text-slate-gray text-xs md:text-sm max-w-md mx-auto md:mx-0 leading-relaxed">
             We'd love to hear about your vision. Fill out the form and our team will be in touch shortly.
           </p>
         </div>
 
-        <form className="space-y-5 md:space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-3.5 md:space-y-4" onSubmit={handleSubmit}>
           
           {/* Name Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 First Name
               </label>
               <input
@@ -134,12 +134,12 @@ const ContactForm = () => {
                 placeholder="Jane"
                 value={form.firstName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black placeholder:text-slate-gray/30"
                 required
               />
             </div>
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 Last Name
               </label>
               <input
@@ -148,16 +148,16 @@ const ContactForm = () => {
                 placeholder="Doe"
                 value={form.lastName}
                 onChange={handleChange}
-                className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black placeholder:text-slate-gray/30"
                 required
               />
             </div>
           </div>
 
           {/* Contact Fields */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 Email Address
               </label>
               <input
@@ -166,12 +166,12 @@ const ContactForm = () => {
                 placeholder="jane@example.com"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black placeholder:text-slate-gray/30"
                 required
               />
             </div>
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 Phone Number
               </label>
               <input
@@ -180,16 +180,16 @@ const ContactForm = () => {
                 placeholder="+91 83359 34679"
                 value={form.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30"
+                className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black placeholder:text-slate-gray/30"
                 required
               />
             </div>
           </div>
 
           {/* Event Details */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 Event Type
               </label>
               <div className="relative group">
@@ -197,7 +197,7 @@ const ContactForm = () => {
                   name="eventType"
                   value={form.eventType}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black appearance-none cursor-pointer pr-10"
+                  className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black appearance-none cursor-pointer pr-10"
                   required
                 >
                   <option value="" disabled>Select event...</option>
@@ -209,8 +209,8 @@ const ContactForm = () => {
               </div>
             </div>
             
-            <div className="space-y-1.5 md:space-y-2">
-              <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+            <div className="space-y-1">
+              <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
                 Event Date
               </label>
               <input
@@ -219,7 +219,7 @@ const ContactForm = () => {
                 value={form.eventDate}
                 onChange={handleChange}
                 min={today}
-                className={`w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black ${
+                className={`w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black ${
                   error && error.includes("date") ? "border-red-500" : "border-charcoal-black/10"
                 }`}
                 required
@@ -228,17 +228,17 @@ const ContactForm = () => {
           </div>
 
           {/* Message Area */}
-          <div className="space-y-1.5 md:space-y-2">
-            <label className="font-inter text-[10px] md:text-[11px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
+          <div className="space-y-1">
+            <label className="font-inter text-[9px] md:text-[10px] font-bold text-charcoal-black uppercase tracking-widest ml-1">
               Enquiry
             </label>
             <textarea
-              rows="3"
+              rows="2"
               name="message"
               placeholder="Tell us about your plans..."
               value={form.message}
               onChange={handleChange}
-              className="w-full px-4 py-3 md:px-5 md:py-3.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm md:text-base text-charcoal-black placeholder:text-slate-gray/30 resize-none"
+              className="w-full px-3 py-2 md:px-4 md:py-2.5 bg-warm-ivory/30 border border-charcoal-black/10 rounded-xl focus:outline-none focus:border-gold-accent focus:ring-1 focus:ring-gold-accent transition-all font-inter text-sm text-charcoal-black placeholder:text-slate-gray/30 resize-none"
               required
             ></textarea>
           </div>

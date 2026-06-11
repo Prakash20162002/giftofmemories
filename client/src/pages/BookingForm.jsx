@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PageVideoSection from '../components/PageVideoSection';
 
 const BookingForm = () => {
   const [loading, setLoading] = useState(false);
@@ -45,38 +46,79 @@ const BookingForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 to-purple-600 p-6 flex justify-center items-center">
-      <div className="bg-white rounded-xl shadow-2xl overflow-hidden max-w-lg w-full">
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-700 p-6 text-center text-white">
-          <h1 className="text-2xl font-bold">Book Your Session</h1>
-          <p className="opacity-80">We'll remind you via WhatsApp!</p>
+    <div className="min-h-screen bg-[#FAF9F6] pt-28 lg:pt-36 pb-16 flex flex-col items-center px-4 md:px-6">
+      
+      {/* Booking Form Card */}
+      <div className="bg-white rounded-3xl border border-charcoal-black/5 shadow-[0_20px_50px_rgba(0,0,0,0.03)] overflow-hidden max-w-lg w-full mb-16">
+        
+        {/* Form Header */}
+        <div className="bg-charcoal-black p-8 text-center text-white relative">
+          <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_top_left,_#C9A24D_1px,_transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+          <h1 className="text-3xl font-playfair font-bold text-warm-ivory">Book Your Session</h1>
+          <p className="text-[10px] font-bold text-gold-accent uppercase tracking-widest mt-2">Automated WhatsApp Reminders Included</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        {/* Form Elements */}
+        <form onSubmit={handleSubmit} className="p-8 space-y-6">
           {message.text && (
-            <div className={`p-3 rounded ${message.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+            <div className={`p-4 rounded-xl text-xs font-semibold ${
+              message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-red-50 text-red-700 border border-red-100'
+            }`}>
               {message.text}
             </div>
           )}
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="customer_name">Full Name</label>
-            <input type="text" id="customer_name" name="customer_name" required className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-gray ml-1" htmlFor="customer_name">
+              Full Name
+            </label>
+            <input 
+              type="text" 
+              id="customer_name" 
+              name="customer_name" 
+              required 
+              placeholder="e.g. Rig Biswas"
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-charcoal-black placeholder:text-gray-300 focus:bg-white focus:outline-none focus:border-gold-accent focus:ring-4 focus:ring-gold-accent/5 transition-all" 
+            />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="phone">WhatsApp Number (with country code)</label>
-            <input type="text" id="phone" name="phone" placeholder="e.g. 918335934679" required className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-gray ml-1" htmlFor="phone">
+              WhatsApp Number (with country code)
+            </label>
+            <input 
+              type="text" 
+              id="phone" 
+              name="phone" 
+              placeholder="e.g. 918335934679" 
+              required 
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-charcoal-black placeholder:text-gray-300 focus:bg-white focus:outline-none focus:border-gold-accent focus:ring-4 focus:ring-gold-accent/5 transition-all" 
+            />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="event_date">Event Date</label>
-            <input type="date" id="event_date" name="event_date" required min={new Date().toISOString().split('T')[0]} className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500" />
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-gray ml-1" htmlFor="event_date">
+              Event Date
+            </label>
+            <input 
+              type="date" 
+              id="event_date" 
+              name="event_date" 
+              required 
+              min={new Date().toISOString().split('T')[0]} 
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-charcoal-black focus:bg-white focus:outline-none focus:border-gold-accent focus:ring-4 focus:ring-gold-accent/5 transition-all cursor-pointer" 
+            />
           </div>
 
-          <div>
-            <label className="block text-gray-700 font-medium mb-1" htmlFor="event_type">Event Type</label>
-            <select id="event_type" name="event_type" className="w-full border border-gray-300 rounded px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+          <div className="space-y-1">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-gray ml-1" htmlFor="event_type">
+              Event Type
+            </label>
+            <select 
+              id="event_type" 
+              name="event_type" 
+              className="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3.5 text-sm font-medium text-charcoal-black focus:bg-white focus:outline-none focus:border-gold-accent focus:ring-4 focus:ring-gold-accent/5 transition-all cursor-pointer"
+            >
               <option value="Wedding">Wedding</option>
               <option value="Pre-Wedding">Pre-Wedding</option>
               <option value="Birthday">Birthday</option>
@@ -85,10 +127,19 @@ const BookingForm = () => {
             </select>
           </div>
 
-          <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white font-bold py-3 rounded hover:bg-indigo-700 transition disabled:opacity-50 mt-4">
+          <button 
+            type="submit" 
+            disabled={loading} 
+            className="w-full bg-charcoal-black text-gold-accent hover:bg-gold-accent hover:text-charcoal-black font-bold uppercase tracking-widest py-4 rounded-xl shadow-lg disabled:opacity-50 transition-all duration-300 cursor-pointer mt-6"
+          >
             {loading ? 'Processing...' : 'Confirm Booking'}
           </button>
         </form>
+      </div>
+
+      {/* Dynamic Video Guides Section */}
+      <div className="w-full max-w-[1240px] mx-auto border-t border-charcoal-black/5 pt-10">
+        <PageVideoSection pageType="booking" title="Booking Guides" subtitle="How to Book Your Session" layout="static" />
       </div>
     </div>
   );

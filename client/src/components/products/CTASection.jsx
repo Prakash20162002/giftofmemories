@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom"; // FIX 1: Import Link
 import { MessageCircle, ArrowRight } from "lucide-react";
 
-const WHATSAPP_NUMBER = "918335934679";
+const WHATSAPP_NUMBER = "917003006612";
 
 const CTASection = () => {
   const handleWhatsAppClick = () => {

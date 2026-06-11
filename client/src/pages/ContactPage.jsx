@@ -64,6 +64,8 @@ const ContactPage = () => {
         <MapSection />
       </motion.section>
 
+
+
       {/* ---------------- FAQ SECTION ---------------- */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}

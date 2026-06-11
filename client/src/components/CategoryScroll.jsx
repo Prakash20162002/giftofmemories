@@ -1,8 +1,64 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+
+const ChevronLeft = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+  </svg>
+);
+
+const ChevronRight = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+);
 
 const CategoryScrollSection = ({ categories = [], selectedCategories = [], onToggle }) => {
   if (!categories || categories.length === 0) return null;
+
+  const scrollRef = useRef(null);
+  const [showLeftArrow, setShowLeftArrow] = useState(false);
+  const [showRightArrow, setShowRightArrow] = useState(false);
+
+  const checkScrollLimits = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 10);
+      setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) {
+      const timer = setTimeout(() => {
+        checkScrollLimits();
+      }, 300);
+
+      el.addEventListener("scroll", checkScrollLimits);
+      window.addEventListener("resize", checkScrollLimits);
+
+      return () => {
+        clearTimeout(timer);
+        el.removeEventListener("scroll", checkScrollLimits);
+        window.removeEventListener("resize", checkScrollLimits);
+      };
+    }
+  }, [categories]);
+
+  const handleScroll = (direction) => {
+    if (scrollRef.current) {
+      const { scrollLeft, clientWidth } = scrollRef.current;
+      const scrollAmount = clientWidth * 0.75;
+      const targetScroll =
+        direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
+
+      scrollRef.current.scrollTo({
+        left: targetScroll,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     // Note: Kept background transparent here so it perfectly blends with your sticky header
@@ -13,56 +69,89 @@ const CategoryScrollSection = ({ categories = [], selectedCategories = [], onTog
           Shop By Category
         </h2>
 
-        {/* CRITICAL FIX: Changed pb-6 to py-6. 
-            This adds padding to the top AND bottom so the gold ring and scale effect 
-            have physical space to render without being clipped by overflow-x-auto! */}
-        <div className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar py-6 px-4 md:px-8">
-          {categories.map((cat) => {
-            const active = selectedCategories.includes(cat.name);
+        {/* Wrapper with group hover to show/hide arrows */}
+        <div className="relative group">
+          
+          {/* Left Arrow Button */}
+          <button
+            onClick={() => handleScroll("left")}
+            className={`absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/95 shadow-lg border border-charcoal-black/5 text-charcoal-black hover:bg-gold-accent hover:text-white transition-all duration-300 md:flex hidden items-center justify-center cursor-pointer scale-90 hover:scale-100 select-none ${
+              showLeftArrow
+                ? "opacity-0 group-hover:opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            }`}
+            aria-label="Scroll categories left"
+          >
+            <ChevronLeft />
+          </button>
 
-            return (
-              <motion.div
-                key={cat._id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4 }}
-                viewport={{ once: true, margin: "-20px" }}
-                className="snap-start shrink-0"
-              >
-                <button
-                  onClick={() => onToggle(cat.name)}
-                  className="flex flex-col items-center w-[120px] sm:w-[140px] md:w-[180px] cursor-pointer group focus:outline-none"
+          {/* Right Arrow Button */}
+          <button
+            onClick={() => handleScroll("right")}
+            className={`absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-white/95 shadow-lg border border-charcoal-black/5 text-charcoal-black hover:bg-gold-accent hover:text-white transition-all duration-300 md:flex hidden items-center justify-center cursor-pointer scale-90 hover:scale-100 select-none ${
+              showRightArrow
+                ? "opacity-0 group-hover:opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
+            }`}
+            aria-label="Scroll categories right"
+          >
+            <ChevronRight />
+          </button>
+
+          {/* CRITICAL FIX: Changed pb-6 to py-6. 
+              This adds padding to the top AND bottom so the gold ring and scale effect 
+              have physical space to render without being clipped by overflow-x-auto! */}
+          <div
+            ref={scrollRef}
+            className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory no-scrollbar py-6 px-4 md:px-8"
+          >
+            {categories.map((cat) => {
+              const active = selectedCategories.includes(cat.name);
+
+              return (
+                <motion.div
+                  key={cat._id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4 }}
+                  viewport={{ once: true, margin: "-20px" }}
+                  className="snap-start shrink-0"
                 >
-                  <div
-                    // Fixed the ring offset color to match the background so it looks seamless
-                    className={`w-full aspect-[4/5] md:h-[180px] rounded-2xl overflow-hidden shadow-md transition-all duration-300 ${
-                      active
-                        ? "ring-4 ring-gold-accent ring-offset-4 ring-offset-[#FAF9F6] scale-105 shadow-xl"
-                        : "ring-1 ring-charcoal-black/10 hover:shadow-lg hover:ring-gold-accent/50"
-                    }`}
+                  <button
+                    onClick={() => onToggle(cat.name)}
+                    className="flex flex-col items-center w-[120px] sm:w-[140px] md:w-[180px] cursor-pointer group focus:outline-none"
                   >
-                    <img
-                      src={cat.image}
-                      alt={cat.name}
-                      draggable={false}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                  </div>
+                    <div
+                      // Fixed the ring offset color to match the background so it looks seamless
+                      className={`w-full aspect-[4/5] md:h-[180px] rounded-2xl overflow-hidden shadow-md transition-all duration-300 ${
+                        active
+                          ? "ring-4 ring-gold-accent ring-offset-4 ring-offset-[#FAF9F6] scale-105 shadow-xl"
+                          : "ring-1 ring-charcoal-black/10 hover:shadow-lg hover:ring-gold-accent/50"
+                      }`}
+                    >
+                      <img
+                        src={cat.image}
+                        alt={cat.name}
+                        draggable={false}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                    </div>
 
-                  {/* Polished Text */}
-                  <p
-                    className={`text-center mt-5 text-xs md:text-sm font-inter uppercase tracking-wider transition-colors duration-300 ${
-                      active
-                        ? "text-gold-accent font-bold"
-                        : "text-charcoal-black/70 group-hover:text-charcoal-black font-medium"
-                    }`}
-                  >
-                    {cat.name}
-                  </p>
-                </button>
-              </motion.div>
-            );
-          })}
+                    {/* Polished Text */}
+                    <p
+                      className={`text-center mt-5 text-xs md:text-sm font-inter uppercase tracking-wider transition-colors duration-300 ${
+                        active
+                          ? "text-gold-accent font-bold"
+                          : "text-charcoal-black/70 group-hover:text-charcoal-black font-medium"
+                      }`}
+                    >
+                      {cat.name}
+                    </p>
+                  </button>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

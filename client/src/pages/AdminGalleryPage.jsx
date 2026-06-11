@@ -418,7 +418,7 @@ const AdminGalleryPage = () => {
                     <div className="flex flex-col items-center text-slate-gray">
                       <Upload className="mb-3 text-gold-accent" size={28} />
                       <span className="text-sm font-bold text-charcoal-black">Select High-Res Image</span>
-                      <span className="text-[10px] uppercase tracking-widest mt-1 font-bold">JPG, PNG, WEBP</span>
+                      <span className="text-[10px] uppercase tracking-widest mt-1 font-bold">JPG, PNG, WEBP • Rec. Ratio: 1:1 (Square)</span>
                     </div>
                   )}
                 </div>

@@ -16,6 +16,23 @@ const ServiceDetailsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { isClientLoggedIn } = useClientAuth();
 
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
+  const youtubeId = service ? getYouTubeId(service.youtubeUrl) : null;
+  const customVideos = youtubeId ? [{
+    _id: service._id,
+    title: service.title,
+    description: service.shortDescription || service.description,
+    videoType: "youtube",
+    youtubeId: youtubeId,
+    thumbnailUrl: `https://img.youtube.com/vi/${youtubeId}/0.jpg`
+  }] : null;
+
   // Extract numeric price from string safely
   const extractPrice = (priceString) => {
     if (!priceString) return 0;
@@ -138,6 +155,29 @@ const ServiceDetailsPage = () => {
                   )}
                 </motion.div>
 
+                {/* Static YouTube Video on the Main Page */}
+                {customVideos && !service.showVideoAsFloating && (
+                  <RevealOnScroll>
+                    <div className="bg-white p-4 md:p-6 rounded-[2rem] border border-charcoal-black/5 shadow-sm space-y-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-1.5 h-6 bg-gold-accent rounded-full" />
+                        <h3 className="font-playfair text-xl md:text-2xl text-charcoal-black font-bold">
+                          Cinematic Showcase
+                        </h3>
+                      </div>
+                      <div className="rounded-2xl overflow-hidden shadow-md aspect-video relative bg-charcoal-black border border-charcoal-black/5">
+                        <iframe
+                          src={`https://www.youtube.com/embed/${youtubeId}`}
+                          className="w-full h-full border-0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={`${service.title} Showcase Video`}
+                        />
+                      </div>
+                    </div>
+                  </RevealOnScroll>
+                )}
+
                 <RevealOnScroll>
                   <div className="space-y-8 md:space-y-10">
                     
@@ -222,14 +262,24 @@ const ServiceDetailsPage = () => {
               <div className="w-full xl:w-[420px] shrink-0">
                 <div className="sticky top-28 space-y-8">
                   
-                  {/* Instructional Video (if any) */}
+                  {/* Service Booking Guide (Always static in sidebar) */}
                   <div className="rounded-[2rem] overflow-hidden shadow-sm border border-charcoal-black/5 bg-white p-2">
                     <PageVideoSection
                       pageType="booking"
                       title="Booking Guide"
                       subtitle="How to Secure Your Date"
+                      layout="static"
                     />
                   </div>
+
+                  {/* Render floating video widget if custom service video is configured to float */}
+                  {customVideos && service.showVideoAsFloating && (
+                    <PageVideoSection
+                      customVideos={customVideos}
+                      title={service.title}
+                      layout="floating"
+                    />
+                  )}
                   
                   {/* Booking Form Component */}
                   <div className="rounded-[2rem] shadow-xl border border-charcoal-black/5 bg-white overflow-hidden">

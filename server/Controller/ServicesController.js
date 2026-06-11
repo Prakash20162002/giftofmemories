@@ -68,6 +68,8 @@ export const addService = async (req, res) => {
       shortDescription,
       details,
       packageId,
+      youtubeUrl,
+      showVideoAsFloating,
     } = req.body;
 
     if (!title || !category || !price) {
@@ -134,6 +136,8 @@ export const addService = async (req, res) => {
       logo: logoUrl,
       details: details ? JSON.parse(details) : {},
       package: packageId || null,
+      youtubeUrl: youtubeUrl || "",
+      showVideoAsFloating: showVideoAsFloating === "true" || showVideoAsFloating === true,
     });
 
     await newService.save();
@@ -182,6 +186,8 @@ export const updateService = async (req, res) => {
       shortDescription,
       details,
       packageId,
+      youtubeUrl,
+      showVideoAsFloating,
     } = req.body;
 
     const updateData = {
@@ -202,6 +208,14 @@ export const updateService = async (req, res) => {
 
     if (details) {
       updateData.details = JSON.parse(details);
+    }
+
+    if (youtubeUrl !== undefined) {
+      updateData.youtubeUrl = youtubeUrl || "";
+    }
+
+    if (showVideoAsFloating !== undefined) {
+      updateData.showVideoAsFloating = showVideoAsFloating === "true" || showVideoAsFloating === true;
     }
 
     if (req.files) {

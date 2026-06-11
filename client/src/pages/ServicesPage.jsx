@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 import ServiceHero from "../components/services/ServiceHero";
 import ServiceFilter from "../components/services/ServiceFilter";
 import ServiceCategoryGrid from "../components/services/ServiceCategoryGrid";
@@ -12,10 +13,30 @@ const ServicesPage = () => {
   const [services, setServices] = useState([]);
   const [packages, setPackages] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState({
-    packageId: "all",
-    priceRange: [0, 500000],
-  });
+  
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [priceRange, setPriceRange] = useState([0, 3000000]);
+
+  const packageQuery = searchParams.get("packageId") || searchParams.get("package") || "all";
+
+  const activeFilter = {
+    packageId: packageQuery,
+    priceRange,
+  };
+
+  const handleSetActiveFilter = (updater) => {
+    const nextFilter = typeof updater === "function" ? updater(activeFilter) : updater;
+    
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextFilter.packageId === "all") {
+      nextParams.delete("packageId");
+      nextParams.delete("package");
+    } else {
+      nextParams.set("packageId", nextFilter.packageId);
+    }
+    setSearchParams(nextParams);
+    setPriceRange(nextFilter.priceRange);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -92,8 +113,16 @@ const ServicesPage = () => {
           pageType="services"
           title="The Cinematic Experience"
           subtitle="Watch Our Behind-The-Scenes & Service Guides"
+          layout="static"
         />
       </section>
+
+      {/* Floating Video Widget (like shop page) */}
+      <PageVideoSection
+        pageType="services"
+        title="Featured Guides"
+        layout="floating"
+      />
 
       {/* Main Services Filter & Grid */}
       <section 
@@ -101,24 +130,26 @@ const ServicesPage = () => {
         /* FIX: Drastically reduced top and bottom padding */
         className="pt-8 pb-12 md:pt-12 md:pb-20 px-4 sm:px-6 lg:px-8 max-w-[1440px] mx-auto"
       >
-        {/* FIX: Reduced margin below the text block */}
-        <div className="text-center mb-8 md:mb-10">
-            <span className="text-gold-accent font-inter text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-2 block">
-              Tailored for You
-            </span>
-            {/* FIX: Slightly tightened the heading size and bottom margin */}
-            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-charcoal-black font-bold mb-3">
+        {/* Premium Editorial Header */}
+        <div className="text-center mb-10 md:mb-12">
+            <div className="flex items-center justify-center gap-3 mb-3">
+              <span className="h-[1px] w-8 md:w-12 bg-gradient-to-r from-transparent to-gold-accent/50" />
+              <span className="text-gold-accent font-inter text-[9px] md:text-[11px] font-black uppercase tracking-[0.45em] block">
+                Tailored for You
+              </span>
+              <span className="h-[1px] w-8 md:w-12 bg-gradient-to-l from-transparent to-gold-accent/50" />
+            </div>
+            <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl text-charcoal-black font-bold mb-4 tracking-wide">
               Curated Service Collections
             </h2>
-            {/* FIX: Made the paragraph slightly more compact */}
-            <p className="font-inter text-slate-gray text-sm md:text-base max-w-2xl mx-auto font-light leading-relaxed">
+            <p className="font-inter text-slate-gray/80 text-xs md:text-sm max-w-2xl mx-auto font-light leading-relaxed md:leading-loose">
               From intimate haldi ceremonies to grand wedding receptions, explore our bespoke photography and filmmaking packages designed to capture the essence of your most cherished moments.
             </p>
         </div>
 
         <ServiceFilter
           activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
+          setActiveFilter={handleSetActiveFilter}
           packages={packages}
         />
         
@@ -132,9 +163,7 @@ const ServicesPage = () => {
       </section>
 
       {/* Custom Packages CTA */}
-      <section aria-label="Request a Custom Package" className="bg-charcoal-black">
-        <CustomPackageCTA />
-      </section>
+      <CustomPackageCTA />
 
       {/* Trust Badges */}
       <section aria-label="Our Guarantees" className="bg-white border-t border-charcoal-black/10">

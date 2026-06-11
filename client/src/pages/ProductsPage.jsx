@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import { Filter, PackageX, PlayCircle, X, ArrowLeft } from "lucide-react"; // <-- ADDED ArrowLeft
+import { Filter, PackageX, ArrowLeft } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 
 import ProductsHero from "../components/products/ProductsHero";
@@ -13,6 +13,7 @@ import TrustStrip from "../components/products/TrustStrip";
 import CategoryScrollSection from "../components/CategoryScroll";
 import SidebarFilter from "../components/ProductSideBar";
 import MobileFilterDrawer from "../components/MoblieFilter";
+import PageVideoSection from "../components/PageVideoSection";
 
 const ProductsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,8 +21,6 @@ const ProductsPage = () => {
 
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [shopVideo, setShopVideo] = useState(null);
-  const [isVideoExpanded, setIsVideoExpanded] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -60,19 +59,7 @@ const ProductsPage = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    const fetchVideo = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_NODE_URL}/api/page-videos/page/shop`);
-        if (res.data && res.data.length > 0) {
-          setShopVideo(res.data[0]);
-        }
-      } catch (err) {
-        console.warn("No active shop video found.");
-      }
-    };
-    fetchVideo();
-  }, []);
+
 
   useEffect(() => {
     if (categoryQuery && categories.length > 0) {
@@ -142,62 +129,7 @@ const ProductsPage = () => {
         <ProductsHero />
       </section>
 
-      {shopVideo && (
-        <div className="bg-charcoal-black relative z-30 w-full transition-all duration-500">
-          <AnimatePresence mode="wait">
-            {!isVideoExpanded ? (
-              <motion.button
-                key="banner"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsVideoExpanded(true)}
-                className="w-full py-3 px-4 cursor-pointer group hover:bg-gold-accent transition-colors duration-500 flex items-center justify-center gap-2"
-              >
-                <PlayCircle size={18} className="text-gold-accent group-hover:text-charcoal-black transition-colors duration-500" strokeWidth={1.5} />
-                <span className="font-inter text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-warm-ivory group-hover:text-charcoal-black transition-colors duration-500">
-                  {shopVideo.title || "Watch: How to Order Our Samogri"}
-                </span>
-              </motion.button>
-            ) : (
-              <motion.div
-                key="video-player"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                className="w-full overflow-hidden border-b border-white/10"
-              >
-                <div className="max-w-4xl mx-auto px-4 py-4 md:py-6">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-playfair text-lg md:text-2xl text-gold-accent font-bold">
-                      {shopVideo.title}
-                    </h3>
-                    <button 
-                      onClick={() => setIsVideoExpanded(false)}
-                      className="cursor-pointer w-8 h-8 rounded-full bg-white/10 hover:bg-gold-accent text-white hover:text-charcoal-black flex items-center justify-center transition-all duration-300"
-                    >
-                      <X size={18} />
-                    </button>
-                  </div>
-                  <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-2xl bg-black border border-white/10">
-                    {shopVideo.videoType === "youtube" ? (
-                      <iframe 
-                        src={`https://www.youtube.com/embed/${shopVideo.youtubeId}?autoplay=1`} 
-                        className="w-full h-full absolute inset-0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                        allowFullScreen 
-                      />
-                    ) : (
-                      <video src={shopVideo.videoUrl} controls autoPlay className="w-full h-full object-cover absolute inset-0" />
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      )}
+
 
       <div className="bg-white/80 backdrop-blur-md sticky top-0 z-[40] border-b border-charcoal-black/5 shadow-sm">
         <CategoryScrollSection
@@ -351,6 +283,9 @@ const ProductsPage = () => {
           </div>
         </div>
       </main>
+
+      {/* ---------------- DYNAMIC VIDEOS AREA ---------------- */}
+      <PageVideoSection pageType="shop" title="Shop Guides" subtitle="Explore Our Product Stories" layout="floating" />
 
       <section className="relative z-[10] bg-white border-t border-charcoal-black/5 mt-auto">
         <CTASection />

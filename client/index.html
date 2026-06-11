@@ -81,30 +81,33 @@
         ]
       }
     </script>
+
+    <!-- FOUC Fix: hide raw SEO fallback until React mounts -->
+    <style>.seo-fallback { display: none; }</style>
   </head>
   <body>
     <!-- Fallback HTML content for static crawlers. React replaces this dynamic content upon page initialization. -->
     <div id="root">
-      <header>
+      <header class="seo-fallback">
         <img src="/src/assets/images/logo-negative-gom.png" alt="Gift of Memories Logo" />
         <h1>Gift of Memories | Best Wedding Photographer in Kolkata</h1>
         <p>Kolkata's premier photography and cinematography studio. We capture authentic Bengali wedding rituals, luxury events, candid stories, and professional portraits.</p>
         <nav>
           <ul>
-            <li><a href="/gallery">Gallery & Portfolio</a></li>
+            <li><a href="/gallery">Gallery &amp; Portfolio</a></li>
             <li><a href="/services">Photography Services</a></li>
             <li><a href="/shop">Wedding Samogri Store</a></li>
             <li><a href="/about">About Rig Biswas</a></li>
             <li><a href="/contact">Book a Session</a></li>
-            <li><a href="/blog">Our Journal & Stories</a></li>
+            <li><a href="/blog">Our Journal &amp; Stories</a></li>
           </ul>
         </nav>
       </header>
-      <main>
-        <h2>Premium Wedding Photography & Cinematography Services in Kolkata</h2>
+      <main class="seo-fallback">
+        <h2>Premium Wedding Photography &amp; Cinematography Services in Kolkata</h2>
         <p>Our studio specializes in capturing luxury wedding ceremonies and creating cinematic wedding films. Explore our bespoke services and custom pricing options.</p>
       </main>
-      <footer>
+      <footer class="seo-fallback">
         <p>&copy; Gift of Memories. Sukanta pally Rabindra Nagar, Dum Dum Cantonment, Kolkata, West Bengal 700065. Phone: +91 83359 34679</p>
       </footer>
     </div>

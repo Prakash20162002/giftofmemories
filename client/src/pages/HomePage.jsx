@@ -81,23 +81,22 @@ const HomePage = () => {
             
       {/* PRODUCTS SECTION (SAMOGRI) */}
       <RevealOnScroll>
-        <section id="shop" className="py-16 md:py-32 bg-white relative w-full">
+        <section id="shop" className="py-14 md:py-20 bg-white relative w-full">
           <div className="container mx-auto px-6 lg:px-12 text-center">
             <span className="text-gold-accent font-inter text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-4 block">
               {settings.productsBadge}
             </span>
-            <h2 className="font-playfair text-3xl md:text-7xl text-charcoal-black mb-6">
+            <h2 className="font-playfair text-3xl md:text-5xl lg:text-6xl text-charcoal-black mb-4">
               {settings.productsTitle}
             </h2>
-            <p className="font-inter text-slate-gray text-base md:text-lg max-w-2xl mx-auto mb-16 leading-relaxed">
+            <p className="font-inter text-slate-gray/80 text-sm md:text-base max-w-xl mx-auto mb-12 leading-relaxed">
               {settings.productsDesc}
             </p>
             
             <ProductCategoryGrid />
 
-            <div className="mt-8 md:mt-12 flex justify-center">
-              {/* FIX: Removed w-full. Reduced mobile padding (px-6 py-3.5). Reduced mobile text (text-[10px]). */}
-              <a href="/shop" className="w-max inline-flex px-6 py-3.5 md:px-10 md:py-5 bg-gold-accent text-white font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm shadow-2xl hover:bg-charcoal-black transition-all items-center justify-center gap-2">
+            <div className="mt-8 md:mt-10 flex justify-center">
+              <a href="/shop" className="w-max inline-flex px-6 py-3.5 md:px-10 md:py-4 bg-gold-accent text-white font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm shadow-2xl hover:bg-charcoal-black transition-all items-center justify-center gap-2">
                 Explore Samogri Shop <ArrowRight size={14} className="md:w-4 md:h-4" />
               </a>
             </div>
@@ -107,21 +106,30 @@ const HomePage = () => {
 
       {/* SERVICES SECTION */}
       <RevealOnScroll>
-        <section id="services" className="py-16 md:py-32 bg-warm-ivory border-y border-charcoal-black/5 w-full">
+        <section id="services" className="py-14 md:py-20 bg-warm-ivory border-y border-charcoal-black/5 w-full">
           <div className="container mx-auto px-6 lg:px-12 text-center">
-            <span className="text-gold-accent font-inter text-[10px] uppercase tracking-[0.4em] mb-4 block font-black">
-              {settings.servicesBadge}
-            </span>
-            <h2 className="font-playfair text-3xl md:text-7xl text-charcoal-black mb-6">
+            {/* Eyebrow with flanking lines */}
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="h-[1px] w-8 md:w-14 bg-gold-accent/40" />
+              <span className="text-gold-accent font-inter text-[10px] md:text-[11px] uppercase tracking-[0.45em] font-black">
+                {settings.servicesBadge}
+              </span>
+              <span className="h-[1px] w-8 md:w-14 bg-gold-accent/40" />
+            </div>
+
+            <h2 className="font-playfair text-3xl md:text-5xl lg:text-6xl text-charcoal-black font-bold mb-6 tracking-tight">
               {settings.servicesTitle}
             </h2>
-            
+
             <ServiceCategoryGrid packages={packages} isLoading={isLoadingServices} />
 
-            <div className="mt-8 md:mt-12 flex justify-center">
-              {/* FIX: Removed w-full. Scaled down mobile padding (px-6 py-3.5) and text (text-[10px]). */}
-              <a href="/services" className="w-max inline-flex px-6 py-3.5 md:px-10 md:py-5 border-2 border-gold-accent text-charcoal-black font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm hover:bg-gold-accent hover:text-white transition-all items-center justify-center gap-2">
-                {settings.servicesBtn} <ArrowRight size={14} className="md:w-4 md:h-4" />
+            <div className="mt-8 md:mt-10 flex justify-center">
+              <a
+                href="/services"
+                className="group w-max inline-flex items-center gap-3 px-6 py-3.5 md:px-10 md:py-4 border-2 border-gold-accent text-charcoal-black font-inter text-[10px] md:text-xs font-black uppercase tracking-widest rounded-full md:rounded-sm hover:bg-gold-accent hover:text-white transition-all items-center justify-center gap-2"
+              >
+                {settings.servicesBtn}
+                <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-300" />
               </a>
             </div>
           </div>

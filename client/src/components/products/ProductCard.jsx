@@ -4,7 +4,7 @@ import { IconBrandWhatsapp } from "@tabler/icons-react";
 import { useClientAuth } from "../../context/ClientAuthContext";
 import { useNavigate } from "react-router-dom";
 
-const WHATSAPP_NUMBER = "918335934679";
+const WHATSAPP_NUMBER = "917003006612";
 
 const ProductCard = ({ product, onClick }) => {
   const { isClientLoggedIn } = useClientAuth();

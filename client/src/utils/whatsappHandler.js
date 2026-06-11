@@ -1,4 +1,5 @@
-const PHONE_NUMBER = "918335934679";
+const SHOP_PHONE_NUMBER = "917003006612";
+const GENERAL_PHONE_NUMBER = "918335934679";
 
 export function triggerWhatsApp(customerName, productName) {
   const message = `Hi Gift of Memories! 📸
@@ -13,7 +14,7 @@ Please share more details about pricing and availability.
 Thank you! 🙏`;
 
   const encodedMessage = encodeURIComponent(message);
-  const whatsappURL = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
+  const whatsappURL = `https://wa.me/${SHOP_PHONE_NUMBER}?text=${encodedMessage}`;
 
   window.open(whatsappURL, "_blank");
 }
@@ -29,7 +30,7 @@ Please share more details about packages and pricing.
 Thank you! 🙏`;
 
   const encodedMessage = encodeURIComponent(message);
-  const whatsappURL = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
+  const whatsappURL = `https://wa.me/${GENERAL_PHONE_NUMBER}?text=${encodedMessage}`;
 
   window.open(whatsappURL, "_blank");
 }
@@ -47,7 +48,7 @@ Please confirm availability and next steps.
 Thank you! 🙏`;
 
   const encodedMessage = encodeURIComponent(message);
-  const whatsappURL = `https://wa.me/${PHONE_NUMBER}?text=${encodedMessage}`;
+  const whatsappURL = `https://wa.me/${GENERAL_PHONE_NUMBER}?text=${encodedMessage}`;
 
   window.open(whatsappURL, "_blank");
 }

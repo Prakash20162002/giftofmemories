@@ -587,7 +587,7 @@ const handleMediaChange = (e) => {
                     <label className={`flex-1 border-2 border-dashed rounded-xl p-4 md:p-6 flex flex-col items-center justify-center cursor-pointer transition-all h-24 md:h-32 ${mediaPreview ? 'border-charcoal-black/10 hover:border-gold-accent hover:bg-warm-ivory/20' : 'border-gold-accent/30 bg-gold-accent/5 hover:border-gold-accent'}`}>
                       <Upload size={20} className="text-gold-accent mb-2 md:w-6 md:h-6" />
                       <span className="text-xs md:text-sm font-bold text-charcoal-black">{mediaFiles ? "Change Image" : "Upload Image"}</span>
-                      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-gray mt-1 text-center">JPG, PNG (Max 10MB)</span>
+                      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-gray mt-1 text-center">JPG, PNG (Max 10MB) • Rec. Ratio: 4:5 (Portrait)</span>
                       <input
   type="file"
   accept="image/*,video/*"
