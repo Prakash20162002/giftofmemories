@@ -10,8 +10,15 @@ import {
   Award, 
   ChevronRight,
   Leaf,
-  ArrowLeft
+  ArrowLeft,
+  Play
 } from "lucide-react";
+
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  if (url.includes("/video/upload/")) return true;
+  return url.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) !== null;
+};
 
 import Loader from "../components/Loader";
 import TrustStrip from "../components/products/TrustStrip";
@@ -71,7 +78,6 @@ const ProductDetailsPage = () => {
 
         <div className="flex flex-col lg:flex-row gap-10 xl:gap-16 items-start">
           
-          {/* LEFT: PICTURE AREA */}
           <div className="w-full lg:w-[48%] space-y-4">
             <motion.div 
               initial={{ opacity: 0, y: 10 }} 
@@ -79,19 +85,35 @@ const ProductDetailsPage = () => {
               className="relative aspect-square bg-white rounded-2xl overflow-hidden shadow-lg border border-charcoal-black/5 max-h-[550px]"
             >
               <AnimatePresence mode="wait">
-                <motion.img 
-                  key={selectedMedia}
-                  src={selectedMedia} 
-                  alt={product.name} 
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="w-full h-full object-contain bg-[#FAF9F6]/40 p-2"
-                />
+                {isVideoUrl(selectedMedia) ? (
+                  <motion.video
+                    key={selectedMedia}
+                    src={selectedMedia}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full h-full object-contain bg-[#FAF9F6]/40 p-2"
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <motion.img 
+                    key={selectedMedia}
+                    src={selectedMedia} 
+                    alt={product.name} 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="w-full h-full object-contain bg-[#FAF9F6]/40 p-2"
+                  />
+                )}
               </AnimatePresence>
               
-              <div className="absolute top-4 left-4">
+              <div className="absolute top-4 left-4 z-10">
                 <span className="bg-charcoal-black/90 backdrop-blur-md text-white px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-sm shadow-xl">
                   {product.tag || "Exclusive"}
                 </span>
@@ -109,7 +131,16 @@ const ProductDetailsPage = () => {
                       selectedMedia === file ? "border-gold-accent scale-95 shadow-md" : "border-transparent opacity-50 hover:opacity-100"
                     }`}
                   >
-                    <img src={file} className="w-full h-full object-contain bg-[#FAF9F6]/40 p-1" alt="Gallery preview" />
+                    {isVideoUrl(file) ? (
+                      <div className="relative w-full h-full">
+                        <video src={file} className="w-full h-full object-cover bg-[#FAF9F6]/40 p-1" />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/25 text-white">
+                          <Play size={18} fill="currentColor" />
+                        </div>
+                      </div>
+                    ) : (
+                      <img src={file} className="w-full h-full object-contain bg-[#FAF9F6]/40 p-1" alt="Gallery preview" />
+                    )}
                   </button>
                 ))}
               </div>

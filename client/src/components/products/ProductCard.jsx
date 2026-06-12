@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { IconBrandWhatsapp } from "@tabler/icons-react";
+import { IconBrandWhatsapp, IconShare } from "@tabler/icons-react";
 import { useClientAuth } from "../../context/ClientAuthContext";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const WHATSAPP_NUMBER = "917003006612";
 
@@ -25,6 +26,26 @@ const ProductCard = ({ product, onClick }) => {
 
   const handleCardClick = () => {
     navigate(`/shop/product/${product.slug || product._id}`);
+  };
+
+  const handleShare = (e) => {
+    e.stopPropagation();
+    const productUrl = `${window.location.origin}/shop/product/${product.slug || product._id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: `Check out ${product.name} on Gift of Memories!`,
+        url: productUrl,
+      })
+      .catch((error) => console.log('Error sharing:', error));
+    } else {
+      navigator.clipboard.writeText(productUrl)
+        .then(() => {
+          toast.success("Link copied to clipboard!");
+        })
+        .catch((err) => console.error('Could not copy text: ', err));
+    }
   };
 
   const media = product.preview || product.media?.[0];
@@ -79,6 +100,15 @@ const ProductCard = ({ product, onClick }) => {
             </span>
           )}
         </div>
+
+        {/* Share Button (Top Right) */}
+        <button
+          onClick={handleShare}
+          className="absolute top-3 right-3 z-30 w-8 h-8 md:w-9 md:h-9 rounded-full bg-white/90 backdrop-blur-sm text-charcoal-black hover:bg-gold-accent hover:text-white transition-all duration-300 flex items-center justify-center shadow-sm cursor-pointer hover:scale-105"
+          title="Share Product"
+        >
+          <IconShare size={16} strokeWidth={2} />
+        </button>
 
         {/* ---------------- SLIDE-UP WHATSAPP BUTTON ---------------- */}
         {/* Instead of a green button outside, it's a luxury slide-up bar inside the image */}

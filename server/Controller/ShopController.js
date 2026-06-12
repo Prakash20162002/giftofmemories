@@ -522,16 +522,33 @@ export const updateProduct = async (req, res) => {
       updateData.slug = await generateUniqueSlug(req.body.name, Shop, id);
     }
 
-    if (req.files && req.files.length > 0) {
-      const mediaUrls = [];
+    let finalMedia = [];
+    if (req.body.existingMedia) {
+      try {
+        finalMedia = typeof req.body.existingMedia === "string"
+          ? JSON.parse(req.body.existingMedia)
+          : req.body.existingMedia;
+      } catch (e) {
+        finalMedia = Array.isArray(req.body.existingMedia) ? req.body.existingMedia : [req.body.existingMedia];
+      }
+    } else {
+      if (req.files && req.files.length > 0) {
+        finalMedia = [];
+      } else {
+        finalMedia = product.media || [];
+      }
+    }
 
+    if (req.files && req.files.length > 0) {
+      const newMediaUrls = [];
       for (const file of req.files) {
         const result = await uploadToCloudinary(file.buffer, file.mimetype);
-        mediaUrls.push(result.secure_url);
+        newMediaUrls.push(result.secure_url);
       }
-
-      updateData.media = mediaUrls;
+      finalMedia = [...finalMedia, ...newMediaUrls];
     }
+
+    updateData.media = finalMedia;
 
     const updatedProduct = await Shop.findByIdAndUpdate(id, updateData, {
       new: true,

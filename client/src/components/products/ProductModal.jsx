@@ -1,11 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Share2, ShoppingCart, ShieldCheck, ChevronRight } from "lucide-react";
+import { X, Share2, ShoppingCart, ShieldCheck, ChevronRight, Play } from "lucide-react";
 import { useClientAuth } from "../../context/ClientAuthContext";
 import { triggerWhatsApp } from "../../utils/whatsappHandler";
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  if (url.includes("/video/upload/")) return true;
+  return url.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) !== null;
+};
+
 const ProductModal = ({ isOpen, onClose, product }) => {
   const { isClientLoggedIn, clientUser } = useClientAuth();
+  const [selectedMedia, setSelectedMedia] = useState(null);
+
+  const mediaList = product ? (product.media && product.media.length > 0 ? product.media : (product.image ? [product.image] : [])) : [];
+
+  useEffect(() => {
+    if (product) {
+      setSelectedMedia(mediaList[0] || null);
+    }
+  }, [product]);
 
   // Prevent background scrolling when modal is open and handle Escape key
   useEffect(() => {
@@ -59,26 +74,61 @@ const ProductModal = ({ isOpen, onClose, product }) => {
               <X size={20} strokeWidth={2.5} />
             </button>
 
-            {/* Image Section - Adaptive height on mobile */}
+            {/* Media Section - Adaptive height on mobile */}
             <div className="w-full md:w-1/2 h-[35vh] min-h-[240px] md:h-auto md:min-h-0 relative bg-warm-ivory shrink-0 group overflow-hidden">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
-              />
+              {selectedMedia && (
+                isVideoUrl(selectedMedia) ? (
+                  <video
+                    src={selectedMedia}
+                    className="w-full h-full object-cover"
+                    controls
+                    autoPlay
+                    muted
+                    playsInline
+                  />
+                ) : (
+                  <img
+                    src={selectedMedia}
+                    alt={product.name}
+                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                  />
+                )
+              )}
               
               {isClientLoggedIn && (
-                <div className="absolute top-4 left-4 bg-gold-accent text-charcoal-black text-[10px] font-bold px-3 py-1.5 md:px-4 md:py-2 rounded-full shadow-lg z-10 uppercase tracking-widest border border-white/20">
+                <div className="absolute top-4 left-4 bg-gold-accent text-charcoal-black text-[10px] font-bold px-3 py-1.5 md:px-4 md:py-2 rounded-full shadow-lg z-20 uppercase tracking-widest border border-white/20">
                   15% Off Deal
                 </div>
               )}
 
-              {/* Progress Indicators */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 md:gap-2">
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className={`h-1.5 rounded-full transition-all duration-500 ${i === 0 ? "w-6 md:w-8 bg-gold-accent shadow-sm" : "w-1.5 bg-white/60"}`} />
-                ))}
-              </div>
+              {/* Media Thumbnails Slider */}
+              {mediaList.length > 1 && (
+                <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 px-4 z-20 overflow-x-auto no-scrollbar max-w-[90%] mx-auto">
+                  {mediaList.map((file, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedMedia(file);
+                      }}
+                      className={`relative w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-lg overflow-hidden border-2 transition-all duration-300 cursor-pointer ${
+                        selectedMedia === file ? "border-gold-accent scale-95 shadow-md" : "border-white/60 opacity-80 hover:opacity-100"
+                      }`}
+                    >
+                      {isVideoUrl(file) ? (
+                        <div className="relative w-full h-full bg-[#FAF9F6]/40">
+                          <video src={file} className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-white">
+                            <Play size={12} fill="currentColor" />
+                          </div>
+                        </div>
+                      ) : (
+                        <img src={file} className="w-full h-full object-cover" alt="preview" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info Section - flex-1 ensures it takes remaining height and scrolls internally */}

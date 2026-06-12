@@ -365,7 +365,9 @@ const AdminProductCollections = () => {
                           {collection.products.map((product) => (
                             <div key={product._id} className="flex items-center gap-3 bg-white pl-2 pr-3 py-2 rounded-xl border border-charcoal-black/10 shadow-sm group hover:border-gold-accent/50 transition-colors">
                               <div className="w-8 h-8 rounded-md overflow-hidden bg-warm-ivory shrink-0">
-                                {product.image && <img src={product.image} alt={product.name} className="w-full h-full object-cover" />}
+                                {(product.media?.[0] || product.image) && (
+                                  <img src={product.media?.[0] || product.image} alt={product.name} className="w-full h-full object-cover" />
+                                )}
                               </div>
                               <div className="flex flex-col max-w-[140px]">
                                 <span className="text-[11px] font-bold text-charcoal-black truncate">{product.name}</span>
@@ -505,7 +507,9 @@ const AdminProductCollections = () => {
                           {isSelected && <Check size={14} className="text-white" strokeWidth={3} />}
                         </div>
                         <div className="w-12 h-12 rounded-lg overflow-hidden bg-white shrink-0 border border-charcoal-black/5">
-                          {product.image && <img src={product.image} alt={product.name} className="w-full h-full object-cover" />}
+                          {(product.media?.[0] || product.image) && (
+                            <img src={product.media?.[0] || product.image} alt={product.name} className="w-full h-full object-cover" />
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-bold text-charcoal-black truncate">{product.name}</h4>

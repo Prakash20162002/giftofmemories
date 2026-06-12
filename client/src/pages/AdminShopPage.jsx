@@ -12,6 +12,12 @@ import { toast } from "react-toastify";
 import Loader from "../components/Loader";
 import { useConfirm } from "../context/ConfirmContext";
 
+const isVideoUrl = (url) => {
+  if (!url) return false;
+  if (url.includes("/video/upload/")) return true;
+  return url.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) !== null;
+};
+
 const AdminShopPage = () => {
   const confirm = useConfirm();
   const [products, setProducts] = useState([]);
@@ -36,8 +42,7 @@ const AdminShopPage = () => {
     name: "", description: "", price: "", category: "", popularity: "",
     isBestseller: false, oldPrice: "", tag: "",
   });
- const [mediaFiles, setMediaFiles] = useState([]);
-const [mediaPreview, setMediaPreview] = useState([]);
+  const [mediaItems, setMediaItems] = useState([]);
 
   // Form state for categories
   const [categoryFormData, setCategoryFormData] = useState({
@@ -86,9 +91,8 @@ const [mediaPreview, setMediaPreview] = useState([]);
       name: "", description: "", price: "", category: categories.length > 0 ? categories[0]._id : "",
       popularity: "", isBestseller: false, oldPrice: "", tag: "",
     });
-    setMediaFiles([]);
-setMediaPreview([]);
- setEditingProduct(null);
+    setMediaItems([]);
+    setEditingProduct(null);
   };
 
   const handleOpenModal = (product = null) => {
@@ -100,7 +104,16 @@ setMediaPreview([]);
         isBestseller: product.isBestseller || false, oldPrice: product.oldPrice ? product.oldPrice.toString() : "",
         tag: product.tag || "none",
       });
-    setMediaPreview(product.media || []);
+      const items = (product.media || []).map((url) => {
+        const isVideo = isVideoUrl(url);
+        return {
+          id: url,
+          url: url,
+          type: isVideo ? "video" : "image",
+          isExisting: true
+        };
+      });
+      setMediaItems(items);
     } else {
       resetForm();
     }
@@ -108,18 +121,37 @@ setMediaPreview([]);
   };
 
   const handleCloseModal = () => {
+    mediaItems.forEach((item) => {
+      if (!item.isExisting && item.url.startsWith("blob:")) {
+        URL.revokeObjectURL(item.url);
+      }
+    });
     setShowModal(false);
     resetForm();
   };
 
-const handleMediaChange = (e) => {
-  const files = Array.from(e.target.files);
+  const handleMediaChange = (e) => {
+    const files = Array.from(e.target.files);
+    const newItems = files.map((file) => {
+      const isVideo = file.type.startsWith("video/");
+      return {
+        id: `${file.name}-${Date.now()}-${Math.random()}`,
+        url: URL.createObjectURL(file),
+        type: isVideo ? "video" : "image",
+        file: file,
+        isExisting: false
+      };
+    });
+    setMediaItems((prev) => [...prev, ...newItems]);
+    e.target.value = "";
+  };
 
-  setMediaFiles(files);
-
-  const previews = files.map((file) => URL.createObjectURL(file));
-  setMediaPreview(previews);
-};
+  const handleRemoveMediaItem = (itemToRemove) => {
+    if (!itemToRemove.isExisting && itemToRemove.url.startsWith("blob:")) {
+      URL.revokeObjectURL(itemToRemove.url);
+    }
+    setMediaItems((prev) => prev.filter((item) => item.id !== itemToRemove.id));
+  };
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -129,7 +161,12 @@ const handleMediaChange = (e) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!editingProduct && mediaFiles.length === 0) return toast.error("Product media is required");
+    const existingMedia = mediaItems.filter(item => item.isExisting).map(item => item.url);
+    const newFiles = mediaItems.filter(item => !item.isExisting).map(item => item.file);
+
+    if (existingMedia.length === 0 && newFiles.length === 0) {
+      return toast.error("Product media is required");
+    }
     if (!formData.name || !formData.description || !formData.price || !formData.category) {
       return toast.error("Please fill all required fields");
     }
@@ -145,9 +182,11 @@ const handleMediaChange = (e) => {
       data.append("category", formData.category);
       data.append("popularity", formData.popularity || "0");
       data.append("isBestseller", formData.isBestseller);
-     mediaFiles.forEach((file) => {
-  data.append("media", file);
-});
+      data.append("existingMedia", JSON.stringify(existingMedia));
+      
+      newFiles.forEach((file) => {
+        data.append("media", file);
+      });
 
       if (editingProduct) {
         await axios.put(`${import.meta.env.VITE_NODE_URL}/api/shop/update-product/${editingProduct._id}`, data, {
@@ -417,7 +456,11 @@ const handleMediaChange = (e) => {
                           }`}
                         >
                           <div className="relative aspect-[4/5] bg-warm-ivory overflow-hidden group">
-                            <img src={product.media?.[0]} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            {product.media?.[0] && isVideoUrl(product.media[0]) ? (
+                              <video src={product.media[0]} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" muted playsInline />
+                            ) : (
+                              <img src={product.media?.[0] || "/placeholder.png"} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                            )}
                             
                             {/* Badges - Scaled for mobile */}
                             <div className="absolute top-2 left-2 md:top-3 md:left-3 flex flex-col gap-1.5 md:gap-2">
@@ -566,35 +609,46 @@ const handleMediaChange = (e) => {
               <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
                 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal-black ml-1">Product Image {!editingProduct && <span className="text-red-500">*</span>}</label>
-                  <div className="flex items-center gap-4 md:gap-6">
-                   {mediaPreview.length > 0 && (
-  <div className="flex gap-3 flex-wrap">
-    {mediaPreview.map((file, index) => (
-      <div
-        key={index}
-        className="w-24 h-24 md:w-28 md:h-32 rounded-xl overflow-hidden border border-charcoal-black/5"
-      >
-        {file.includes(".mp4") || file.includes(".webm") ? (
-          <video src={file} className="w-full h-full object-cover" />
-        ) : (
-          <img src={file} className="w-full h-full object-cover" />
-        )}
-      </div>
-    ))}
-  </div>
-)}
-                    <label className={`flex-1 border-2 border-dashed rounded-xl p-4 md:p-6 flex flex-col items-center justify-center cursor-pointer transition-all h-24 md:h-32 ${mediaPreview ? 'border-charcoal-black/10 hover:border-gold-accent hover:bg-warm-ivory/20' : 'border-gold-accent/30 bg-gold-accent/5 hover:border-gold-accent'}`}>
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-charcoal-black ml-1">Product Media (Images & Videos) {!editingProduct && <span className="text-red-500">*</span>}</label>
+                  <div className="flex flex-col gap-4">
+                    {mediaItems.length > 0 && (
+                      <div className="flex gap-3 flex-wrap">
+                        {mediaItems.map((item) => (
+                          <div
+                            key={item.id}
+                            className="relative w-24 h-24 md:w-28 md:h-32 rounded-xl overflow-hidden border border-charcoal-black/5 bg-warm-ivory/10 group"
+                          >
+                            {item.type === "video" ? (
+                              <video src={item.url} className="w-full h-full object-cover" muted playsInline />
+                            ) : (
+                              <img src={item.url} className="w-full h-full object-cover" alt="Media preview" />
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveMediaItem(item)}
+                              className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 shadow-md z-10 cursor-pointer"
+                              title="Remove"
+                            >
+                              <X size={12} strokeWidth={3} />
+                            </button>
+                            <span className="absolute bottom-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/60 text-white text-[8px] uppercase tracking-wider font-semibold z-10">
+                              {item.type}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <label className="border-2 border-dashed rounded-xl p-4 md:p-6 flex flex-col items-center justify-center cursor-pointer transition-all h-24 md:h-32 border-charcoal-black/10 hover:border-gold-accent hover:bg-warm-ivory/20">
                       <Upload size={20} className="text-gold-accent mb-2 md:w-6 md:h-6" />
-                      <span className="text-xs md:text-sm font-bold text-charcoal-black">{mediaFiles ? "Change Image" : "Upload Image"}</span>
-                      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-gray mt-1 text-center">JPG, PNG (Max 10MB) • Rec. Ratio: 4:5 (Portrait)</span>
+                      <span className="text-xs md:text-sm font-bold text-charcoal-black">Add Photos/Videos</span>
+                      <span className="text-[8px] md:text-[10px] font-bold uppercase tracking-widest text-slate-gray mt-1 text-center">JPG, PNG, MP4, MOV (Max 50MB) • Rec. Ratio: 4:5</span>
                       <input
-  type="file"
-  accept="image/*,video/*"
-  multiple
-  onChange={handleMediaChange}
-  className="hidden"
-/>
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        onChange={handleMediaChange}
+                        className="hidden"
+                      />
                     </label>
                   </div>
                 </div>
