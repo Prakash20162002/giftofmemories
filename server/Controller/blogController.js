@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Blog from "../Model/Blog.js";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
@@ -160,3 +161,94 @@ export const deleteBlog = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/* ---------------- SHARE REDIRECT ENDPOINT ---------------- */
+
+export const getShareBlogPage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let blog;
+    
+    // Find blog by ID or Slug
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      try {
+        blog = await Blog.findById(id);
+      } catch (err) {
+        // Fallback to slug search
+      }
+    }
+    if (!blog) {
+      blog = await Blog.findOne({ slug: id });
+    }
+
+    if (!blog) {
+      return res.status(404).send("Blog not found");
+    }
+
+    const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
+    const redirectUrl = `${frontendUrl}/blog/${blog._id}`;
+
+    // Detect crawlers (Facebook, WhatsApp, Twitter, etc.)
+    const userAgent = req.headers["user-agent"] || "";
+    const crawlerUserAgents = [
+      "facebookexternalhit",
+      "twitterbot",
+      "linkedinbot",
+      "whatsapp",
+      "slackbot",
+      "telegrambot",
+      "discordbot",
+      "googlebot",
+      "bingbot",
+      "yandexbot",
+      "baiduspider",
+      "embedly"
+    ];
+
+    const isCrawler = crawlerUserAgents.some((crawler) =>
+      userAgent.toLowerCase().includes(crawler)
+    );
+
+    if (isCrawler) {
+      const blogTitle = blog.title;
+      const blogDescription = blog.excerpt
+        ? blog.excerpt.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
+        : "";
+      const blogImage = blog.image || "";
+
+      return res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>${blogTitle}</title>
+  <meta name="description" content="${blogDescription}">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="${blogTitle}">
+  <meta property="og:description" content="${blogDescription}">
+  <meta property="og:image" content="${blogImage}">
+  <meta property="og:url" content="${redirectUrl}">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${blogTitle}">
+  <meta name="twitter:description" content="${blogDescription}">
+  <meta name="twitter:image" content="${blogImage}">
+</head>
+<body>
+  <p>Redirecting to <a href="${redirectUrl}">${blogTitle}</a>...</p>
+</body>
+</html>
+      `);
+    } else {
+      // Human browser, redirect via 302
+      return res.redirect(302, redirectUrl);
+    }
+  } catch (error) {
+    console.error("Error in getShareBlogPage:", error);
+    res.status(500).send("Server Error");
+  }
+};
+

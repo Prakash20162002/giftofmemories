@@ -11,8 +11,10 @@ import {
   ChevronRight,
   Leaf,
   ArrowLeft,
-  Play
+  Play,
+  Share2
 } from "lucide-react";
+import { toast } from "react-toastify";
 
 const isVideoUrl = (url) => {
   if (!url) return false;
@@ -63,6 +65,26 @@ const ProductDetailsPage = () => {
   const handleWhatsAppOrder = () => {
     const msg = `Hello Gift of Memories! I want to order ${product.name} (₹${product.price}).\nLink: ${window.location.href}`;
     window.open(`https://wa.me/917003006612?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+
+  const handleShare = (e) => {
+    e.stopPropagation();
+    const shareUrl = `${import.meta.env.VITE_NODE_URL}/api/shop/share-product/${product.slug || product._id}`;
+    
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: `Check out ${product.name} on Gift of Memories!`,
+        url: shareUrl,
+      })
+      .catch((error) => console.log('Error sharing:', error));
+    } else {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+          toast.success("Link copied to clipboard!");
+        })
+        .catch((err) => console.error('Could not copy text: ', err));
+    }
   };
 
   return (
@@ -180,13 +202,23 @@ const ProductDetailsPage = () => {
 
             {/* Booking / CTA Section - ADDED CURSOR POINTER */}
             <div className="space-y-4 pt-2">
-              <button
-                onClick={handleWhatsAppOrder}
-                className="w-full py-5 bg-charcoal-black text-gold-accent rounded-xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-gold-accent hover:text-charcoal-black transition-all duration-500 shadow-xl flex items-center justify-center gap-3 cursor-pointer"
-              >
-                <ShoppingCart size={18} />
-                Order via WhatsApp
-              </button>
+              <div className="flex gap-4">
+                <button
+                  onClick={handleWhatsAppOrder}
+                  className="flex-1 py-5 bg-charcoal-black text-gold-accent rounded-xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-gold-accent hover:text-charcoal-black transition-all duration-500 shadow-xl flex items-center justify-center gap-3 cursor-pointer"
+                >
+                  <ShoppingCart size={18} />
+                  Order via WhatsApp
+                </button>
+                <button
+                  onClick={handleShare}
+                  className="px-6 py-5 bg-white border border-charcoal-black/10 text-charcoal-black rounded-xl text-[11px] font-black uppercase tracking-[0.2em] hover:bg-gold-accent hover:text-charcoal-black hover:border-transparent transition-all duration-500 shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  title="Share Product"
+                >
+                  <Share2 size={18} />
+                  Share
+                </button>
+              </div>
               <div className="flex justify-between items-center px-2 text-[9px] font-bold uppercase text-slate-gray/60 tracking-widest">
                 <span className="flex items-center gap-2"><Truck size={14} /> Nationwide Delivery</span>
                 <span className="flex items-center gap-2"><ShieldCheck size={14} /> Quality Assured</span>

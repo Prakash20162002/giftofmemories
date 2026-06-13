@@ -9,6 +9,7 @@ import {
   createBlog,
   updateBlog,
   deleteBlog,
+  getShareBlogPage
 } from "../Controller/blogController.js";
 
 const router = express.Router();
@@ -99,6 +100,7 @@ router.post("/upload-image", (req, res) => {
 });
 
 router.get("/", getBlogs);
+router.get("/share-blog/:id", getShareBlogPage);
 router.get("/:id", getBlogById);
 router.post("/", upload.single("image"), createBlog);
 router.put("/:id", upload.single("image"), updateBlog);

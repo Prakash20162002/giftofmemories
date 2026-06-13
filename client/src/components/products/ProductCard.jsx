@@ -30,7 +30,7 @@ const ProductCard = ({ product, onClick }) => {
 
   const handleShare = (e) => {
     e.stopPropagation();
-    const productUrl = `${window.location.origin}/shop/product/${product.slug || product._id}`;
+    const productUrl = `${import.meta.env.VITE_NODE_URL}/api/shop/share-product/${product.slug || product._id}`;
     
     if (navigator.share) {
       navigator.share({

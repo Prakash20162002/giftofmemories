@@ -80,6 +80,7 @@ import {
   deleteProduct,
   toggleBestseller,
   toggleActiveStatus,
+  getShareProductPage
 } from "../Controller/ShopController.js";
 
 import { AdminMiddleware } from "../Middlewares/AuthMiddleware.js";
@@ -124,6 +125,8 @@ router.get("/get-product/:id", getProductById);
 router.get("/get-products/category/:categoryId", getProductsByCategory);
 
 router.get("/get-bestsellers", getBestsellerProducts);
+
+router.get("/share-product/:id", getShareProductPage);
 
 /* ---------------- ADMIN ROUTES ---------------- */
 
