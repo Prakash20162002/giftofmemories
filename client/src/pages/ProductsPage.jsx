@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Filter, PackageX, ArrowLeft } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 import ProductsHero from "../components/products/ProductsHero";
 import ProductCard from "../components/products/ProductCard";
@@ -16,7 +16,8 @@ import MobileFilterDrawer from "../components/MoblieFilter";
 import PageVideoSection from "../components/PageVideoSection";
 
 const ProductsPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const categoryQuery = searchParams.get("category");
 
   const [products, setProducts] = useState([]);
@@ -63,18 +64,54 @@ const ProductsPage = () => {
 
   useEffect(() => {
     if (categoryQuery && categories.length > 0) {
-      setSelectedCategories([categoryQuery]);
+      const slugify = (str) => {
+        if (!str) return "";
+        return str
+          .trim()
+          .replace(/^["'“‘”’]+|["'“‘”’]+$/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9\s+_-]/g, "")
+          .replace(/[\s+_-]+/g, "-");
+      };
+
+      const cleanQuery = slugify(categoryQuery);
+      const matchedCategory = categories.find(
+        (c) => slugify(c.name) === cleanQuery
+      );
+
+      if (matchedCategory) {
+        const cleanName = slugify(matchedCategory.name);
+        if (categoryQuery !== cleanName) {
+          navigate(`/shop?category=${encodeURIComponent(cleanName)}`, { replace: true });
+        }
+        setSelectedCategories([matchedCategory.name]);
+      } else {
+        const fallback = slugify(categoryQuery);
+        if (categoryQuery !== fallback) {
+          navigate(`/shop?category=${encodeURIComponent(fallback)}`, { replace: true });
+        }
+        setSelectedCategories([fallback]);
+      }
     }
-  }, [categoryQuery, categories]);
+  }, [categoryQuery, categories, navigate]);
 
   // Single Select (Top Scroll Bar) - Acts as a "Redirect"
   const handleSingleCategorySelect = (name) => {
     if (selectedCategories.length === 1 && selectedCategories[0] === name) {
-      searchParams.delete("category");
-      setSearchParams(searchParams);
+      navigate("/shop", { replace: true });
       setSelectedCategories([]);
     } else {
-      setSearchParams({ category: name });
+      const slugify = (str) => {
+        if (!str) return "";
+        return str
+          .trim()
+          .replace(/^["'“‘”’]+|["'“‘”’]+$/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9\s+_-]/g, "")
+          .replace(/[\s+_-]+/g, "-");
+      };
+      const cleanName = slugify(name);
+      navigate(`/shop?category=${encodeURIComponent(cleanName)}`, { replace: true });
       setSelectedCategories([name]);
       setTimeout(() => {
         window.scrollTo({ top: 380, behavior: "smooth" });
@@ -85,8 +122,7 @@ const ProductsPage = () => {
   // Multi Select (Sidebar checkboxes)
   const handleMultiCategorySelect = (name) => {
     if (categoryQuery) {
-      searchParams.delete("category");
-      setSearchParams(searchParams);
+      navigate("/shop", { replace: true });
     }
     setSelectedCategories((prev) =>
       prev.includes(name)
@@ -96,8 +132,7 @@ const ProductsPage = () => {
   };
 
   const clearFilters = () => {
-    searchParams.delete("category");
-    setSearchParams(searchParams);
+    navigate("/shop", { replace: true });
     setSelectedCategories([]);
     setMinPrice("");
     setMaxPrice("");
