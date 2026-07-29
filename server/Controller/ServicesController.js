@@ -356,13 +356,23 @@ export const getShareServicePage = async (req, res) => {
       return res.status(404).send("Service not found");
     }
 
-    const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
-    const cleanFrontendUrl = frontendUrl.replace(/\/+$/, "");
-    const redirectUrl = `${cleanFrontendUrl}/services/${service.slug || service._id}`;
+    const redirectUrl = `https://giftofmemories.in/services/${service.slug || service._id}`;
+
+    // Instant 302 redirect for human browsers; crawlers get the OG HTML
+    const ua = (req.headers["user-agent"] || "").toLowerCase();
+    const CRAWLER_SIGS = [
+      "whatsapp", "facebookexternalhit", "facebot", "twitterbot", "linkedinbot",
+      "slackbot", "telegrambot", "discordbot", "googlebot", "bingbot",
+      "yandexbot", "baiduspider", "embedly", "outbrain", "pinterest",
+      "applebot", "ia_archiver", "vkshare", "crawl", "spider", "preview"
+    ];
+    if (!CRAWLER_SIGS.some((s) => ua.includes(s))) {
+      return res.redirect(302, redirectUrl);
+    }
 
     let serviceImage = (service.images && service.images[0]) || service.image || service.logo || "";
     if (serviceImage && serviceImage.includes("cloudinary.com") && serviceImage.includes("/upload/")) {
-      serviceImage = serviceImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg/");
+      serviceImage = serviceImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg,q_auto/");
     }
 
     const title = service.title;
@@ -372,45 +382,43 @@ export const getShareServicePage = async (req, res) => {
 
     const safeTitle = title.replace(/"/g, '&quot;');
     const safeDesc = description.replace(/"/g, '&quot;');
+    const safeImage = serviceImage.replace(/"/g, '%22');
 
     return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safeTitle}</title>
+  <title>${safeTitle} | Gift of Memories</title>
   <meta name="description" content="${safeDesc}">
+  <meta name="robots" content="noindex">
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:site_name" content="Gift of Memories">
   <meta property="og:type" content="website">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${safeDesc}">
-  <meta property="og:image" content="${serviceImage}">
-  <meta property="og:image:secure_url" content="${serviceImage}">
+  <meta property="og:image" content="${safeImage}">
+  <meta property="og:image:secure_url" content="${safeImage}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="${redirectUrl}">
   <link rel="canonical" href="${redirectUrl}">
 
-
-  <!-- Twitter -->
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${safeTitle}">
   <meta name="twitter:description" content="${safeDesc}">
-  <meta name="twitter:image" content="${serviceImage}">
+  <meta name="twitter:image" content="${safeImage}">
+  <meta name="twitter:image:alt" content="${safeTitle}">
 
-  <script>
-    window.location.href = "${redirectUrl}";
-  </script>
-  <noscript>
-    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
-  </noscript>
+  <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+  <script>window.location.replace("${redirectUrl}");</script>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 40px; background-color: #FAF9F6;">
+<body style="font-family:sans-serif;text-align:center;padding:40px;background:#FAF9F6;">
   <h2>${safeTitle}</h2>
-  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
+  <p>Redirecting... <a href="${redirectUrl}">Click here if not redirected</a></p>
 </body>
 </html>`);
   } catch (error) {
@@ -418,4 +426,5 @@ export const getShareServicePage = async (req, res) => {
     res.status(500).send("Server Error");
   }
 };
+
 

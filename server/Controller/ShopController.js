@@ -669,6 +669,21 @@ export const toggleActiveStatus = async (req, res) => {
 
 /* ---------------- SHARE REDIRECT ENDPOINT ---------------- */
 
+// Signatures that identify social crawlers (bots that read OG tags)
+const CRAWLER_SIGNATURES = [
+  "whatsapp", "facebookexternalhit", "facebot", "twitterbot", "linkedinbot",
+  "slackbot", "telegrambot", "discordbot", "googlebot", "bingbot",
+  "yandexbot", "baiduspider", "embedly", "outbrain", "pinterest",
+  "applebot", "ia_archiver", "vkshare", "w3c_validator",
+  "crawl", "spider", "preview", "curl", "wget", "python-requests",
+  "axios", "go-http-client", "okhttp"
+];
+
+export const isSocialCrawler = (req) => {
+  const ua = (req.headers["user-agent"] || "").toLowerCase();
+  return CRAWLER_SIGNATURES.some((sig) => ua.includes(sig));
+};
+
 export const getShareProductPage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -701,29 +716,35 @@ export const getShareProductPage = async (req, res) => {
       return res.status(404).send("Product not found");
     }
 
-    const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
-    const cleanFrontendUrl = frontendUrl.replace(/\/+$/, "");
-    const redirectUrl = `${cleanFrontendUrl}/shop/product/${product.slug || product._id}`;
+    const redirectUrl = `https://giftofmemories.in/shop/product/${product.slug || product._id}`;
 
-    // Select suitable image URL from media array or legacy image field
+    // Human browsers get an instant HTTP 302 to the clean giftofmemories.in page.
+    // Social crawlers stay and receive the full Open Graph HTML.
+    if (!isSocialCrawler(req)) {
+      return res.redirect(302, redirectUrl);
+    }
+
+    // Select first non-video image from media array or legacy image field
     let productImage = "";
-    const mediaList = product.media && product.media.length > 0 ? product.media : (product.image ? [product.image] : []);
-    
+    const mediaList = product.media && product.media.length > 0
+      ? product.media
+      : product.image ? [product.image] : [];
+
     for (const item of mediaList) {
-      if (typeof item === "string") {
-        if (!item.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) && !item.includes("/video/upload/")) {
-          productImage = item;
-          break;
-        }
+      if (typeof item === "string" &&
+          !item.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) &&
+          !item.includes("/video/upload/")) {
+        productImage = item;
+        break;
       }
     }
     if (!productImage && mediaList[0]) {
       productImage = mediaList[0];
     }
 
-    // Optimize image URL for WhatsApp link preview card (1200x630 JPEG)
+    // Resize to 1200x630 JPEG via Cloudinary URL transformation
     if (productImage && productImage.includes("cloudinary.com") && productImage.includes("/upload/")) {
-      productImage = productImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg/");
+      productImage = productImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg,q_auto/");
     }
 
     const productName = product.name;
@@ -733,45 +754,44 @@ export const getShareProductPage = async (req, res) => {
 
     const safeTitle = productName.replace(/"/g, '&quot;');
     const safeDesc = productDescription.replace(/"/g, '&quot;');
+    const safeImage = productImage.replace(/"/g, '%22');
 
     return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${safeTitle}</title>
+  <title>${safeTitle} | Gift of Memories</title>
   <meta name="description" content="${safeDesc}">
+  <meta name="robots" content="noindex">
 
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:site_name" content="Gift of Memories">
   <meta property="og:type" content="product">
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${safeDesc}">
-  <meta property="og:image" content="${productImage}">
-  <meta property="og:image:secure_url" content="${productImage}">
+  <meta property="og:image" content="${safeImage}">
+  <meta property="og:image:secure_url" content="${safeImage}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="${redirectUrl}">
   <link rel="canonical" href="${redirectUrl}">
 
-
-  <!-- Twitter -->
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${safeTitle}">
   <meta name="twitter:description" content="${safeDesc}">
-  <meta name="twitter:image" content="${productImage}">
+  <meta name="twitter:image" content="${safeImage}">
+  <meta name="twitter:image:alt" content="${safeTitle}">
 
-  <script>
-    window.location.href = "${redirectUrl}";
-  </script>
-  <noscript>
-    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
-  </noscript>
+  <!-- Fallback redirect for any browser that reaches here -->
+  <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+  <script>window.location.replace("${redirectUrl}");</script>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 40px; background-color: #FAF9F6;">
+<body style="font-family:sans-serif;text-align:center;padding:40px;background:#FAF9F6;">
   <h2>${safeTitle}</h2>
-  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
+  <p>Redirecting... <a href="${redirectUrl}">Click here if not redirected</a></p>
 </body>
 </html>`);
   } catch (error) {
