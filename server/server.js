@@ -208,7 +208,13 @@ app.get("/blog/:id", handleSocialCrawlerPreview(getShareBlogPage));
 app.get("/services/:id", handleSocialCrawlerPreview(getShareServicePage));
 app.get("/stories/:id", handleSocialCrawlerPreview(getShareStoryPage));
 
-// Dedicated share endpoints & short aliases
+// Dedicated Amazon-style short share endpoints (/d/product-slug)
+app.get("/d/:id", getShareProductPage);
+app.get("/d/b/:id", getShareBlogPage);
+app.get("/d/s/:id", getShareServicePage);
+app.get("/d/g/:id", getShareStoryPage);
+
+// Short aliases
 app.get("/p/:id", getShareProductPage);
 app.get("/b/:id", getShareBlogPage);
 app.get("/s/:id", getShareServicePage);
@@ -217,6 +223,7 @@ app.get("/shop/share-product/:id", getShareProductPage);
 app.get("/blog/share-blog/:id", getShareBlogPage);
 app.get("/services/share-service/:id", getShareServicePage);
 app.get("/stories/share-story/:id", getShareStoryPage);
+
 
 
 

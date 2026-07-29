@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- AMAZON-STYLE SHORT SHARE PREVIEW PROXY ---
+  # Silently proxies /d/ (products), /b/ (blogs), /s/ (services), /g/ (stories) to Node backend
+  # so WhatsApp crawlers get Open Graph picture metadata directly on the main domain (giftofmemories.in).
+  RewriteRule ^d/(.*)$ https://api.giftofmemories.in/d/$1 [P,L]
+  RewriteRule ^b/(.*)$ https://api.giftofmemories.in/d/b/$1 [P,L]
+  RewriteRule ^s/(.*)$ https://api.giftofmemories.in/d/s/$1 [P,L]
+  RewriteRule ^g/(.*)$ https://api.giftofmemories.in/d/g/$1 [P,L]
+
+  # --- REACT SINGLE PAGE APPLICATION (SPA) FALLBACK ---
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

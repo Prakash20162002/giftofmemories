@@ -203,10 +203,12 @@ const AppContent = () => {
           
           <Route path="/shop/product/:id" element={<ProductDetailsPage />} />
           <Route path="/shop/share-product/:id" element={<ProductDetailsPage />} />
+          <Route path="/d/:id" element={<ProductDetailsPage />} />
           <Route path="/p/:id" element={<ProductDetailsPage />} />
           <Route path="/b/:id" element={<BlogPostPage />} />
           <Route path="/s/:id" element={<ServiceDetailsPage />} />
           <Route path="/g/:id" element={<ClientGalleryPage />} />
+
 
 
           <Route element={<ProtectedRoute />}>
