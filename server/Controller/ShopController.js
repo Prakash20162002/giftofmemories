@@ -749,9 +749,12 @@ export const getShareProductPage = async (req, res) => {
   <meta property="og:description" content="${safeDesc}">
   <meta property="og:image" content="${productImage}">
   <meta property="og:image:secure_url" content="${productImage}">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="${redirectUrl}">
+  <link rel="canonical" href="${redirectUrl}">
+
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
