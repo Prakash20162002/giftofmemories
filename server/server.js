@@ -134,6 +134,8 @@ app.use(
     origin: [
       "https://giftofmemories.in",      // production (no www)
       "https://www.giftofmemories.in",   // production (with www)
+      "https://gm.giftofmemories.in",    // share subdomain
+      "https://api.giftofmemories.in",   // API subdomain
       process.env.FRONT_END_URL,         // from .env
       "http://localhost:5173",
       "http://localhost:5174",

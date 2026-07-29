@@ -25,7 +25,7 @@
  *   → User never sees api.giftofmemories.in in their browser address bar after redirect
  */
 
-const API_BASE = "https://api.giftofmemories.in";
+const API_BASE = "https://gm.giftofmemories.in";
 
 /**
  * Product share URL → api.giftofmemories.in/d/{slug}
