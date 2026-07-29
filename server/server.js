@@ -32,6 +32,12 @@ import FAQRouter from "./Routes/FAQ.js";
 import OfferRouter from "./Routes/Offer.js";
 import leadRoutes from './Routes/Lead.js';
 
+// Social share controllers
+import { getShareProductPage } from "./Controller/ShopController.js";
+import { getShareBlogPage } from "./Controller/blogController.js";
+import { getShareServicePage } from "./Controller/ServicesController.js";
+import { getShareStoryPage } from "./Controller/ClientGalleryController.js";
+
 // --- NEW: WHATSAPP CRM & WEBSOCKET IMPORTS ---
 import { startClient } from "./whatsapp/whatsapp.js"; 
 import { initializeWebSocket } from "./whatsapp/statusBroadcaster.js"; 
@@ -39,6 +45,7 @@ import WhatsAppReminderRouter from "./Routes/WhatsAppReminder.js";
 import "./whatsapp/reminderScheduler.js"; // Replaces the old cron.js
 
 dotenv.config();
+
 
 // ES Module fix for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -177,11 +184,17 @@ app.use("/api/page-videos", PageVideoRouter);
 app.use("/api/product-collections", ProductCollectionRouter);
 app.use("/api/faq", FAQRouter);
 app.use("/api/faqs", FAQRouter);
-app.use("/api/offers", OfferRouter);
-app.use('/api/leads', leadRoutes);
+
+// --- CLEAN SOCIAL SHARE ENDPOINTS (Direct Domain URLs without /api prefix) ---
+app.get("/shop/share-product/:id", getShareProductPage);
+app.get("/blog/share-blog/:id", getShareBlogPage);
+app.get("/services/share-service/:id", getShareServicePage);
+app.get("/stories/share-story/:id", getShareStoryPage);
+
 
 // --- NEW: WHATSAPP CRM ROUTE ---
 app.use("/api/whatsapp-reminder", WhatsAppReminderRouter);
+
 
 // --- WHATSAPP INITIALIZATION ---
 startClient();
