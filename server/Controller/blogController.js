@@ -164,6 +164,8 @@ export const deleteBlog = async (req, res) => {
 
 /* ---------------- SHARE REDIRECT ENDPOINT ---------------- */
 
+/* ---------------- SHARE REDIRECT ENDPOINT ---------------- */
+
 export const getShareBlogPage = async (req, res) => {
   try {
     const { id } = req.params;
@@ -186,66 +188,59 @@ export const getShareBlogPage = async (req, res) => {
     }
 
     const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
-    const redirectUrl = `${frontendUrl}/blog/${blog._id}`;
+    const cleanFrontendUrl = frontendUrl.replace(/\/+$/, "");
+    const redirectUrl = `${cleanFrontendUrl}/blog/${blog._id}`;
 
-    // Detect crawlers (Facebook, WhatsApp, Twitter, etc.)
-    const userAgent = req.headers["user-agent"] || "";
-    const crawlerUserAgents = [
-      "facebookexternalhit",
-      "twitterbot",
-      "linkedinbot",
-      "whatsapp",
-      "slackbot",
-      "telegrambot",
-      "discordbot",
-      "googlebot",
-      "bingbot",
-      "yandexbot",
-      "baiduspider",
-      "embedly"
-    ];
+    let blogImage = blog.image || "";
+    if (blogImage && blogImage.includes("cloudinary.com") && blogImage.includes("/upload/")) {
+      blogImage = blogImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg/");
+    }
 
-    const isCrawler = crawlerUserAgents.some((crawler) =>
-      userAgent.toLowerCase().includes(crawler)
-    );
+    const blogTitle = blog.title;
+    const blogDescription = blog.excerpt
+      ? blog.excerpt.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().substring(0, 160) + "..."
+      : `Read "${blogTitle}" on Gift of Memories Journal.`;
 
-    if (isCrawler) {
-      const blogTitle = blog.title;
-      const blogDescription = blog.excerpt
-        ? blog.excerpt.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
-        : "";
-      const blogImage = blog.image || "";
+    const safeTitle = blogTitle.replace(/"/g, '&quot;');
+    const safeDesc = blogDescription.replace(/"/g, '&quot;');
 
-      return res.send(`
-<!DOCTYPE html>
+    return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>${blogTitle}</title>
-  <meta name="description" content="${blogDescription}">
-  
-  <!-- Open Graph / Facebook -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${safeTitle}</title>
+  <meta name="description" content="${safeDesc}">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:site_name" content="Gift of Memories">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="${blogTitle}">
-  <meta property="og:description" content="${blogDescription}">
+  <meta property="og:title" content="${safeTitle}">
+  <meta property="og:description" content="${safeDesc}">
   <meta property="og:image" content="${blogImage}">
+  <meta property="og:image:secure_url" content="${blogImage}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="${redirectUrl}">
-  
+
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${blogTitle}">
-  <meta name="twitter:description" content="${blogDescription}">
+  <meta name="twitter:title" content="${safeTitle}">
+  <meta name="twitter:description" content="${safeDesc}">
   <meta name="twitter:image" content="${blogImage}">
+
+  <script>
+    window.location.href = "${redirectUrl}";
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+  </noscript>
 </head>
-<body>
-  <p>Redirecting to <a href="${redirectUrl}">${blogTitle}</a>...</p>
+<body style="font-family: sans-serif; text-align: center; padding: 40px; background-color: #FAF9F6;">
+  <h2>${safeTitle}</h2>
+  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
 </body>
-</html>
-      `);
-    } else {
-      // Human browser, redirect via 302
-      return res.redirect(302, redirectUrl);
-    }
+</html>`);
   } catch (error) {
     console.error("Error in getShareBlogPage:", error);
     res.status(500).send("Server Error");

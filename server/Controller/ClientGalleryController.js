@@ -241,3 +241,73 @@ export const adminDeleteClientGallery = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
+
+/* ---------------- SHARE REDIRECT ENDPOINT ---------------- */
+
+export const getShareStoryPage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const gallery = await ClientGallery.findById(id);
+
+    if (!gallery) {
+      return res.status(404).send("Wedding story not found");
+    }
+
+    const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
+    const cleanFrontendUrl = frontendUrl.replace(/\/+$/, "");
+    const redirectUrl = `${cleanFrontendUrl}/stories/${gallery._id}`;
+
+    let storyImage = gallery.coverImage || (gallery.images && gallery.images[0]) || "";
+    if (storyImage && storyImage.includes("cloudinary.com") && storyImage.includes("/upload/")) {
+      storyImage = storyImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg/");
+    }
+
+    const title = `${gallery.name} - ${gallery.category || "Wedding Story"}`;
+    const description = `Explore the luxury wedding story "${gallery.name}" by Gift of Memories.`;
+
+    const safeTitle = title.replace(/"/g, '&quot;');
+    const safeDesc = description.replace(/"/g, '&quot;');
+
+    return res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${safeTitle}</title>
+  <meta name="description" content="${safeDesc}">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:site_name" content="Gift of Memories">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${safeTitle}">
+  <meta property="og:description" content="${safeDesc}">
+  <meta property="og:image" content="${storyImage}">
+  <meta property="og:image:secure_url" content="${storyImage}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="${redirectUrl}">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${safeTitle}">
+  <meta name="twitter:description" content="${safeDesc}">
+  <meta name="twitter:image" content="${storyImage}">
+
+  <script>
+    window.location.href = "${redirectUrl}";
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+  </noscript>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding: 40px; background-color: #FAF9F6;">
+  <h2>${safeTitle}</h2>
+  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
+</body>
+</html>`);
+  } catch (error) {
+    console.error("Error in getShareStoryPage:", error);
+    res.status(500).send("Server Error");
+  }
+};
+

@@ -382,21 +382,50 @@ export const getAllProductsAdmin = async (req, res) => {
   }
 };
 
-/* ---------------- GET PRODUCT BY ID ---------------- */
+/* ---------------- GET PRODUCT BY ID / SLUG / NAME ---------------- */
 
 export const getProductById = async (req, res) => {
   try {
     const { id } = req.params;
+    const decodedId = decodeURIComponent(id).trim();
     let product;
-    if (mongoose.Types.ObjectId.isValid(id)) {
+
+    // 1. Try finding by ObjectId
+    if (mongoose.Types.ObjectId.isValid(decodedId)) {
       try {
-        product = await Shop.findById(id).populate("category", "name");
+        product = await Shop.findById(decodedId).populate("category", "name");
       } catch (err) {
-        // Fallback to slug search on cast error
+        // Fallback
       }
     }
+
+    // 2. Try exact slug match
     if (!product) {
-      product = await Shop.findOne({ slug: id }).populate("category", "name");
+      product = await Shop.findOne({ slug: decodedId }).populate("category", "name");
+    }
+
+    // 3. Try hyphen-normalized slug match
+    if (!product) {
+      const normalizedSlug = decodedId.toLowerCase().replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+      product = await Shop.findOne({ slug: normalizedSlug }).populate("category", "name");
+    }
+
+    // 4. Try exact case-insensitive product name match
+    if (!product) {
+      const cleanName = decodedId.replace(/[-_]+/g, " ").trim();
+      const escapedName = cleanName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      product = await Shop.findOne({
+        name: { $regex: new RegExp("^" + escapedName.replace(/\\\s+/g, "\\s+") + "$", "i") }
+      }).populate("category", "name");
+    }
+
+    // 5. Try fuzzy regex match by name
+    if (!product) {
+      const cleanName = decodedId.replace(/[-_]+/g, " ").trim();
+      const escapedName = cleanName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      product = await Shop.findOne({
+        name: { $regex: new RegExp(escapedName, "i") }
+      }).populate("category", "name");
     }
 
     if (!product) {
@@ -643,16 +672,29 @@ export const toggleActiveStatus = async (req, res) => {
 export const getShareProductPage = async (req, res) => {
   try {
     const { id } = req.params;
+    const decodedId = decodeURIComponent(id).trim();
     let product;
-    if (mongoose.Types.ObjectId.isValid(id)) {
+
+    if (mongoose.Types.ObjectId.isValid(decodedId)) {
       try {
-        product = await Shop.findById(id);
+        product = await Shop.findById(decodedId);
       } catch (err) {
-        // Fallback to slug search
+        // Fallback
       }
     }
     if (!product) {
-      product = await Shop.findOne({ slug: id });
+      product = await Shop.findOne({ slug: decodedId });
+    }
+    if (!product) {
+      const normalizedSlug = decodedId.toLowerCase().replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
+      product = await Shop.findOne({ slug: normalizedSlug });
+    }
+    if (!product) {
+      const cleanName = decodedId.replace(/[-_]+/g, " ").trim();
+      const escapedName = cleanName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      product = await Shop.findOne({
+        name: { $regex: new RegExp("^" + escapedName.replace(/\\\s+/g, "\\s+") + "$", "i") }
+      });
     }
 
     if (!product) {
@@ -660,66 +702,75 @@ export const getShareProductPage = async (req, res) => {
     }
 
     const frontendUrl = process.env.FRONT_END_URL || "https://giftofmemories.in";
-    const redirectUrl = `${frontendUrl}/shop/product/${product.slug || product._id}`;
+    const cleanFrontendUrl = frontendUrl.replace(/\/+$/, "");
+    const redirectUrl = `${cleanFrontendUrl}/shop/product/${product.slug || product._id}`;
 
-    // Detect crawlers (Facebook, WhatsApp, Twitter, etc.)
-    const userAgent = req.headers["user-agent"] || "";
-    const crawlerUserAgents = [
-      "facebookexternalhit",
-      "twitterbot",
-      "linkedinbot",
-      "whatsapp",
-      "slackbot",
-      "telegrambot",
-      "discordbot",
-      "googlebot",
-      "bingbot",
-      "yandexbot",
-      "baiduspider",
-      "embedly"
-    ];
+    // Select suitable image URL from media array or legacy image field
+    let productImage = "";
+    const mediaList = product.media && product.media.length > 0 ? product.media : (product.image ? [product.image] : []);
+    
+    for (const item of mediaList) {
+      if (typeof item === "string") {
+        if (!item.match(/\.(mp4|webm|mov|mkv|avi|ogg)/i) && !item.includes("/video/upload/")) {
+          productImage = item;
+          break;
+        }
+      }
+    }
+    if (!productImage && mediaList[0]) {
+      productImage = mediaList[0];
+    }
 
-    const isCrawler = crawlerUserAgents.some((crawler) =>
-      userAgent.toLowerCase().includes(crawler)
-    );
+    // Optimize image URL for WhatsApp link preview card (1200x630 JPEG)
+    if (productImage && productImage.includes("cloudinary.com") && productImage.includes("/upload/")) {
+      productImage = productImage.replace("/upload/", "/upload/w_1200,h_630,c_fill,f_jpg/");
+    }
 
-    if (isCrawler) {
-      const productName = product.name;
-      const productDescription = product.description
-        ? product.description.replace(/<[^>]*>/g, "").substring(0, 150) + "..."
-        : "";
-      const productImage = product.media && product.media[0] ? product.media[0] : "";
+    const productName = product.name;
+    const productDescription = product.description
+      ? product.description.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim().substring(0, 160) + "..."
+      : `Buy ${productName} online at Gift of Memories. Premium Kolkata wedding rituals & samogri.`;
 
-      return res.send(`
-<!DOCTYPE html>
+    const safeTitle = productName.replace(/"/g, '&quot;');
+    const safeDesc = productDescription.replace(/"/g, '&quot;');
+
+    return res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>${productName}</title>
-  <meta name="description" content="${productDescription}">
-  
-  <!-- Open Graph / Facebook -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${safeTitle}</title>
+  <meta name="description" content="${safeDesc}">
+
+  <!-- Open Graph / Facebook / WhatsApp -->
+  <meta property="og:site_name" content="Gift of Memories">
   <meta property="og:type" content="product">
-  <meta property="og:title" content="${productName}">
-  <meta property="og:description" content="${productDescription}">
+  <meta property="og:title" content="${safeTitle}">
+  <meta property="og:description" content="${safeDesc}">
   <meta property="og:image" content="${productImage}">
+  <meta property="og:image:secure_url" content="${productImage}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta property="og:url" content="${redirectUrl}">
-  
+
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${productName}">
-  <meta name="twitter:description" content="${productDescription}">
+  <meta name="twitter:title" content="${safeTitle}">
+  <meta name="twitter:description" content="${safeDesc}">
   <meta name="twitter:image" content="${productImage}">
+
+  <script>
+    window.location.href = "${redirectUrl}";
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0;url=${redirectUrl}">
+  </noscript>
 </head>
-<body>
-  <p>Redirecting to <a href="${redirectUrl}">${productName}</a>...</p>
+<body style="font-family: sans-serif; text-align: center; padding: 40px; background-color: #FAF9F6;">
+  <h2>${safeTitle}</h2>
+  <p>Redirecting to <a href="${redirectUrl}">${redirectUrl}</a>...</p>
 </body>
-</html>
-      `);
-    } else {
-      // Human browser, redirect via 302
-      return res.redirect(302, redirectUrl);
-    }
+</html>`);
   } catch (error) {
     console.error("Error in getShareProductPage:", error);
     res.status(500).send("Server Error");

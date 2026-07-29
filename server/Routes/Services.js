@@ -6,6 +6,7 @@ import {
   getServiceById,
   getServices,
   updateService,
+  getShareServicePage,
 } from "../Controller/ServicesController.js";
 import {
   getPackages,
@@ -45,6 +46,8 @@ router.get("/services", getServices);
 router.get("/packages", getPackages);
 router.get("/packages-with-services", getPackagesWithServices);
 router.get("/most-booked-packages", getMostBookedPackages);
+router.get("/share-service/:id", getShareServicePage);
+
 
 router.post(
   "/add-service",

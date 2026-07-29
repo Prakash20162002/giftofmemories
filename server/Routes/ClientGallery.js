@@ -7,6 +7,7 @@ import {
   adminCreateClientGallery,
   adminUpdateClientGallery,
   adminDeleteClientGallery,
+  getShareStoryPage,
 } from "../Controller/ClientGalleryController.js";
 import { AdminMiddleware } from "../Middlewares/AuthMiddleware.js";
 
@@ -34,6 +35,8 @@ const uploadFields = upload.fields([
 // Public routes
 router.get("/active", getClientGalleries);
 router.get("/active/:id", getClientGalleryById);
+router.get("/share-story/:id", getShareStoryPage);
+
 
 // Admin routes
 router.get("/admin/get-all", AdminMiddleware, adminGetClientGalleries);

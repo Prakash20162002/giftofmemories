@@ -1,20 +1,39 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { ChevronRight, ArrowLeft, Clock, Sparkles } from "lucide-react";
+import { ChevronRight, ArrowLeft, Clock, Sparkles, Share2 } from "lucide-react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import ServiceSidebar from "../components/services/ServiceSidebar";
 import ServiceBookingForm from "../components/services/ServiceBookingForm";
 import RevealOnScroll from "../components/RevealOnScroll";
 import { useClientAuth } from "../context/ClientAuthContext";
 import Loader from "../components/Loader";
 import PageVideoSection from "../components/PageVideoSection";
+import { getServiceShareUrl } from "../utils/shareUtils";
 
 const ServiceDetailsPage = () => {
   const { id } = useParams();
   const [service, setService] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const { isClientLoggedIn } = useClientAuth();
+
+  const handleShare = (e) => {
+    if (e) e.stopPropagation();
+    if (!service) return;
+    const shareUrl = getServiceShareUrl(service);
+    if (navigator.share) {
+      navigator.share({
+        title: service.title,
+        text: `Check out ${service.title} on Gift of Memories!`,
+        url: shareUrl,
+      }).catch((err) => console.log("Share error:", err));
+    } else {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success("Link copied to clipboard!"))
+        .catch((err) => console.error("Copy error:", err));
+    }
+  };
 
   const getYouTubeId = (url) => {
     if (!url) return null;
@@ -88,12 +107,22 @@ const ServiceDetailsPage = () => {
       <div className="bg-white border-y border-charcoal-black/5 py-10 md:py-16 mb-8 md:mb-12 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
-          <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-slate-gray mb-6 font-bold">
-            <Link to="/" className="hover:text-gold-accent transition-colors">Home</Link>
-            <ChevronRight size={12} className="text-charcoal-black/20" />
-            <Link to="/services" className="hover:text-gold-accent transition-colors">Services</Link>
-            <ChevronRight size={12} className="text-charcoal-black/20" />
-            <span className="text-gold-accent truncate max-w-[200px] sm:max-w-none">{service.title}</span>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div className="flex flex-wrap items-center gap-2 text-[10px] md:text-xs uppercase tracking-widest text-slate-gray font-bold">
+              <Link to="/" className="hover:text-gold-accent transition-colors">Home</Link>
+              <ChevronRight size={12} className="text-charcoal-black/20" />
+              <Link to="/services" className="hover:text-gold-accent transition-colors">Services</Link>
+              <ChevronRight size={12} className="text-charcoal-black/20" />
+              <span className="text-gold-accent truncate max-w-[200px] sm:max-w-none">{service.title}</span>
+            </div>
+            
+            <button
+              onClick={handleShare}
+              className="px-4 py-2 bg-charcoal-black text-gold-accent hover:bg-gold-accent hover:text-charcoal-black rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
+              title="Share Service"
+            >
+              <Share2 size={14} /> Share Service
+            </button>
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-5 md:gap-6">
@@ -113,6 +142,7 @@ const ServiceDetailsPage = () => {
 
         </div>
       </div>
+
 
       {/* ---------------- MAIN CONTENT GRID ---------------- */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

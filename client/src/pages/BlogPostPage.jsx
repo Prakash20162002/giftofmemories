@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import LoadingScreen from "../components/LoadingScreen";
 import "suneditor/dist/css/suneditor.min.css";
+import { getBlogShareUrl } from "../utils/shareUtils";
 
 const SITE_NAME = "Gift of Memories";
 const BASE_URL = "https://giftofmemories.in";
@@ -176,7 +177,7 @@ const RelatedCard = ({ post }) => (
 const ShareButton = ({ post }) => {
   const [copied, setCopied] = useState(false);
   const handleShare = async () => {
-    const url = `${import.meta.env.VITE_NODE_URL}/api/blogs/share-blog/${post._id}`;
+    const url = getBlogShareUrl(post);
     if (navigator.share) { try { await navigator.share({ title: post.title, text: post.excerpt || post.title, url }); return; } catch {} }
     await navigator.clipboard.writeText(url);
     setCopied(true);

@@ -25,6 +25,7 @@ const isVideoUrl = (url) => {
 import Loader from "../components/Loader";
 import TrustStrip from "../components/products/TrustStrip";
 import CTASection from "../components/products/CTASection";
+import { getProductShareUrl } from "../utils/shareUtils";
 
 const ProductDetailsPage = () => {
   const { id } = useParams();
@@ -40,7 +41,7 @@ const ProductDetailsPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_NODE_URL}/api/shop/get-product/${id}`);
+        const res = await axios.get(`${import.meta.env.VITE_NODE_URL}/api/shop/get-product/${encodeURIComponent(id)}`);
         
         let mediaArray = res.data.media || [];
         if (res.data.image && !mediaArray.includes(res.data.image)) {
@@ -69,7 +70,7 @@ const ProductDetailsPage = () => {
 
   const handleShare = (e) => {
     e.stopPropagation();
-    const shareUrl = `${import.meta.env.VITE_NODE_URL}/api/shop/share-product/${product.slug || product._id}`;
+    const shareUrl = getProductShareUrl(product);
     
     if (navigator.share) {
       navigator.share({

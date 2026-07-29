@@ -202,6 +202,7 @@ const AppContent = () => {
           <Route path="/contact-leads" element={<LeadCapture />} />
           
           <Route path="/shop/product/:id" element={<ProductDetailsPage />} />
+          <Route path="/shop/share-product/:id" element={<ProductDetailsPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />

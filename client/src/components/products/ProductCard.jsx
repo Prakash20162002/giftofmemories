@@ -4,6 +4,7 @@ import { IconBrandWhatsapp, IconShare } from "@tabler/icons-react";
 import { useClientAuth } from "../../context/ClientAuthContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { getProductShareUrl } from "../../utils/shareUtils";
 
 const WHATSAPP_NUMBER = "917003006612";
 
@@ -30,7 +31,7 @@ const ProductCard = ({ product, onClick }) => {
 
   const handleShare = (e) => {
     e.stopPropagation();
-    const productUrl = `${import.meta.env.VITE_NODE_URL}/api/shop/share-product/${product.slug || product._id}`;
+    const productUrl = getProductShareUrl(product);
     
     if (navigator.share) {
       navigator.share({

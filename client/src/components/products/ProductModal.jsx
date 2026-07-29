@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, Share2, ShoppingCart, ShieldCheck, ChevronRight, Play } from "lucide-react";
 import { useClientAuth } from "../../context/ClientAuthContext";
 import { triggerWhatsApp } from "../../utils/whatsappHandler";
+import { getProductShareUrl } from "../../utils/shareUtils";
+import { toast } from "react-toastify";
 
 const isVideoUrl = (url) => {
   if (!url) return false;
@@ -15,6 +17,27 @@ const ProductModal = ({ isOpen, onClose, product }) => {
   const [selectedMedia, setSelectedMedia] = useState(null);
 
   const mediaList = product ? (product.media && product.media.length > 0 ? product.media : (product.image ? [product.image] : [])) : [];
+
+  const handleShare = (e) => {
+    e.stopPropagation();
+    if (!product) return;
+    const shareUrl = getProductShareUrl(product);
+    
+    if (navigator.share) {
+      navigator.share({
+        title: product.name,
+        text: `Check out ${product.name} on Gift of Memories!`,
+        url: shareUrl,
+      })
+      .catch((error) => console.log('Error sharing:', error));
+    } else {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => {
+          toast.success("Link copied to clipboard!");
+        })
+        .catch((err) => console.error('Could not copy text: ', err));
+    }
+  };
 
   useEffect(() => {
     if (product) {
@@ -204,7 +227,8 @@ const ProductModal = ({ isOpen, onClose, product }) => {
                   </span>
                 </button>
                 <button 
-                  className="w-12 sm:w-14 md:w-16 shrink-0 flex items-center justify-center border-2 border-gray-200 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all text-charcoal-black group"
+                  onClick={handleShare}
+                  className="w-12 sm:w-14 md:w-16 shrink-0 flex items-center justify-center border-2 border-gray-200 rounded-xl md:rounded-2xl hover:bg-gray-50 hover:border-gray-300 transition-all text-charcoal-black group cursor-pointer"
                   aria-label="Share product"
                 >
                   <Share2 size={18} className="group-hover:scale-110 transition-transform" />

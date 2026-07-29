@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Eye, Maximize2 } from "lucide-react";
+import { ArrowLeft, Eye, Maximize2, Share2 } from "lucide-react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import LoadingScreen from "../components/LoadingScreen";
 import ImageLightbox from "../components/gallery/ImageLightbox";
+import { getStoryShareUrl } from "../utils/shareUtils";
 
 const ClientGalleryPage = () => {
   const { id } = useParams();
@@ -12,6 +14,23 @@ const ClientGalleryPage = () => {
   const [gallery, setGallery] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+
+  const handleShare = (e) => {
+    if (e) e.stopPropagation();
+    if (!gallery) return;
+    const shareUrl = getStoryShareUrl(gallery);
+    if (navigator.share) {
+      navigator.share({
+        title: gallery.name,
+        text: `Check out ${gallery.name} wedding story on Gift of Memories!`,
+        url: shareUrl,
+      }).catch((err) => console.log("Share error:", err));
+    } else {
+      navigator.clipboard.writeText(shareUrl)
+        .then(() => toast.success("Link copied to clipboard!"))
+        .catch((err) => console.error("Copy error:", err));
+    }
+  };
 
   useEffect(() => {
     const fetchGalleryDetails = async () => {
@@ -73,12 +92,21 @@ const ClientGalleryPage = () => {
 
         {/* Content Overlay */}
         <div className="relative z-10 text-center px-6 max-w-4xl flex flex-col items-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="mb-6 inline-flex items-center gap-2 px-4 py-2 border border-white/20 hover:border-gold-accent text-warm-ivory hover:text-gold-accent bg-black/25 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest transition-all"
-          >
-            <ArrowLeft size={12} /> Back to Gallery
-          </button>
+          <div className="mb-6 flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 hover:border-gold-accent text-warm-ivory hover:text-gold-accent bg-black/25 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest transition-all cursor-pointer"
+            >
+              <ArrowLeft size={12} /> Back to Gallery
+            </button>
+            <button
+              onClick={handleShare}
+              className="inline-flex items-center gap-2 px-4 py-2 border border-gold-accent/50 text-gold-accent hover:bg-gold-accent hover:text-charcoal-black bg-black/25 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest transition-all cursor-pointer shadow-md"
+              title="Share Story"
+            >
+              <Share2 size={12} /> Share Story
+            </button>
+          </div>
 
           <span className="text-gold-accent text-[10px] md:text-xs font-black uppercase tracking-[0.4em] mb-2 md:mb-3">
             {gallery.category}
