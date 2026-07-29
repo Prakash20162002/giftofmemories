@@ -185,11 +185,22 @@ app.use("/api/product-collections", ProductCollectionRouter);
 app.use("/api/faq", FAQRouter);
 app.use("/api/faqs", FAQRouter);
 
-// --- CLEAN SOCIAL SHARE ENDPOINTS (Direct Domain URLs without /api prefix) ---
+// --- SHORT CLEAN SOCIAL SHARE ENDPOINTS (WhatsApp Image Preview Engine) ---
+app.get("/p/:id", getShareProductPage);
+app.get("/b/:id", getShareBlogPage);
+app.get("/s/:id", getShareServicePage);
+app.get("/g/:id", getShareStoryPage);
+
+// Standard aliases
 app.get("/shop/share-product/:id", getShareProductPage);
 app.get("/blog/share-blog/:id", getShareBlogPage);
 app.get("/services/share-service/:id", getShareServicePage);
 app.get("/stories/share-story/:id", getShareStoryPage);
+app.get("/share/product/:id", getShareProductPage);
+app.get("/share/blog/:id", getShareBlogPage);
+app.get("/share/service/:id", getShareServicePage);
+app.get("/share/story/:id", getShareStoryPage);
+
 
 
 // --- NEW: WHATSAPP CRM ROUTE ---

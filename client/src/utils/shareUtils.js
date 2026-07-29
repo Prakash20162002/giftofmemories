@@ -1,22 +1,21 @@
 /**
- * Helper utility to generate clean share URLs on the main domain (https://giftofmemories.in)
- * without any 'api.' subdomain or '/api/' path prefixes.
+ * Helper utility to generate clean share URLs on the backend API server (api.giftofmemories.in)
+ * which serves dynamic Open Graph HTML metadata (og:image) for WhatsApp picture link previews.
  */
 
-const getCleanDomain = () => {
-  let origin = typeof window !== "undefined" ? window.location.origin : "https://giftofmemories.in";
-  if (origin.includes("api.")) {
-    origin = origin.replace("api.", "");
+const getApiShareBaseUrl = () => {
+  let backendUrl = import.meta.env.VITE_NODE_URL || "";
+  if (!backendUrl || backendUrl.includes("localhost")) {
+    backendUrl = typeof window !== "undefined" && window.location.origin.includes("localhost")
+      ? "http://localhost:4000"
+      : "https://api.giftofmemories.in";
   }
-  if (!origin || origin.includes("localhost")) {
-    origin = "https://giftofmemories.in";
-  }
-  return origin.replace(/\/+$/, "");
+  return backendUrl.replace(/\/+$/, "");
 };
 
 /**
- * Generates a clean share URL for products:
- * Format: https://giftofmemories.in/shop/share-product/gorgeous-hand-printed-pan-pata-for-wedding-rituals
+ * Short clean share URL for products:
+ * e.g. https://api.giftofmemories.in/p/gorgeous-hand-printed-pan-pata-for-wedding-rituals
  */
 export const getProductShareUrl = (product) => {
   if (!product) return "";
@@ -25,34 +24,34 @@ export const getProductShareUrl = (product) => {
       ? product.name.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-')
       : product._id
   );
-  return `${getCleanDomain()}/shop/share-product/${slug}`;
+  return `${getApiShareBaseUrl()}/p/${slug}`;
 };
 
 /**
- * Generates a clean share URL for blog posts:
- * Format: https://giftofmemories.in/blog/share-blog/article-slug
+ * Short clean share URL for blog posts:
+ * e.g. https://api.giftofmemories.in/b/article-slug
  */
 export const getBlogShareUrl = (blog) => {
   if (!blog) return "";
   const identifier = blog.slug || blog._id;
-  return `${getCleanDomain()}/blog/share-blog/${identifier}`;
+  return `${getApiShareBaseUrl()}/b/${identifier}`;
 };
 
 /**
- * Generates a clean share URL for services:
- * Format: https://giftofmemories.in/services/share-service/service-slug
+ * Short clean share URL for services:
+ * e.g. https://api.giftofmemories.in/s/service-slug
  */
 export const getServiceShareUrl = (service) => {
   if (!service) return "";
   const identifier = service.slug || service._id;
-  return `${getCleanDomain()}/services/share-service/${identifier}`;
+  return `${getApiShareBaseUrl()}/s/${identifier}`;
 };
 
 /**
- * Generates a clean share URL for client gallery stories:
- * Format: https://giftofmemories.in/stories/share-story/story-id
+ * Short clean share URL for client gallery stories:
+ * e.g. https://api.giftofmemories.in/g/story-id
  */
 export const getStoryShareUrl = (story) => {
   if (!story) return "";
-  return `${getCleanDomain()}/stories/share-story/${story._id}`;
+  return `${getApiShareBaseUrl()}/g/${story._id}`;
 };
