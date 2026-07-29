@@ -185,21 +185,39 @@ app.use("/api/product-collections", ProductCollectionRouter);
 app.use("/api/faq", FAQRouter);
 app.use("/api/faqs", FAQRouter);
 
-// --- SHORT CLEAN SOCIAL SHARE ENDPOINTS (WhatsApp Image Preview Engine) ---
+// --- AUTOMATIC OPEN GRAPH SOCIAL PREVIEW ENGINE ---
+// Intercepts social crawlers (WhatsApp, Facebook, Twitter) requesting standard page URLs
+// and serves dynamic Open Graph HTML metadata with Cloudinary pictures.
+const handleSocialCrawlerPreview = (handler) => async (req, res, next) => {
+  const userAgent = (req.headers["user-agent"] || "").toLowerCase();
+  const crawlerAgents = [
+    "whatsapp", "facebookexternalhit", "twitterbot", "linkedinbot",
+    "slackbot", "telegrambot", "discordbot", "googlebot", "bingbot",
+    "yandexbot", "baiduspider", "embedly", "outbrain", "pinterest"
+  ];
+  const isCrawler = crawlerAgents.some((bot) => userAgent.includes(bot));
+  if (isCrawler) {
+    return handler(req, res);
+  }
+  next();
+};
+
+// Standard main website URL endpoints for WhatsApp link previews (NO 'api.' in URL)
+app.get("/shop/product/:id", handleSocialCrawlerPreview(getShareProductPage));
+app.get("/blog/:id", handleSocialCrawlerPreview(getShareBlogPage));
+app.get("/services/:id", handleSocialCrawlerPreview(getShareServicePage));
+app.get("/stories/:id", handleSocialCrawlerPreview(getShareStoryPage));
+
+// Dedicated share endpoints & short aliases
 app.get("/p/:id", getShareProductPage);
 app.get("/b/:id", getShareBlogPage);
 app.get("/s/:id", getShareServicePage);
 app.get("/g/:id", getShareStoryPage);
-
-// Standard aliases
 app.get("/shop/share-product/:id", getShareProductPage);
 app.get("/blog/share-blog/:id", getShareBlogPage);
 app.get("/services/share-service/:id", getShareServicePage);
 app.get("/stories/share-story/:id", getShareStoryPage);
-app.get("/share/product/:id", getShareProductPage);
-app.get("/share/blog/:id", getShareBlogPage);
-app.get("/share/service/:id", getShareServicePage);
-app.get("/share/story/:id", getShareStoryPage);
+
 
 
 
